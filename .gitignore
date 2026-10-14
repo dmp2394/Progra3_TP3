@@ -1,0 +1,31 @@
+# Compilados
+bin/
+out/
+build/
+target/
+*.class
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+*~
+
+# Eclipse
+.metadata/
+.settings/
+.recommenders/
+.loadpath
+*.launch
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
