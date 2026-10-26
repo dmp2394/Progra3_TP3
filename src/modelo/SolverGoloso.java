@@ -18,13 +18,6 @@ public class SolverGoloso {
 
 	public Set<Integer> resolver() {
 
-//		voy a dejar anotado asi nomas el algoritmo goloso:
-//
-//			obtengo el vertice con mas vecinos
-//			paso por todos los vertices "no cubiertos" hasta que llegue a que un no cubierto no es vecino del que puse recien.
-//			si pasa esto, A no es conjunto dominante, entonces luego agrego el vecino no cubierto con mas cantidad de vecinos desde el no cubierto que parti antes
-//			vuelvo a pasar por todos los vertices no cubiertos, o sea repito el loop. Condicion de corte: Ningun cubierto no es vecino de A
-
 		Set<Integer> solucion = new HashSet<>();
 
 		for (Arista<Integer> arista : verticesOrdenadosPorCantidadDeVecinos()) {
