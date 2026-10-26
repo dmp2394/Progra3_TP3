@@ -11,8 +11,6 @@ public class Grafo<V> {
 	private Map<V, Set<Arista<V>>> listaDeAristasIncidentes;
 	private ArrayList<Arista<V>> aristas;
 
-	private final int ARISTA_PESO_FICTICIO = 100;
-
 	public Grafo() {
 		listaDeAristasIncidentes = new HashMap<>();
 		aristas = new ArrayList<>();
@@ -29,17 +27,14 @@ public class Grafo<V> {
 		listaDeAristasIncidentes.put(vertice, new HashSet<>());
 	}
 
-	public void agregarArista(V vertice1, V vertice2, int peso) {
+	public void agregarArista(V vertice1, V vertice2) {
 		if (!listaDeAristasIncidentes.containsKey(vertice1) || !listaDeAristasIncidentes.containsKey(vertice2))
 			throw new IllegalArgumentException("Error: Uno o ambos vértices no existen en el grafo.");
 
 		if (vertice1.equals(vertice2))
 			throw new IllegalArgumentException("Error: No se permiten loops (aristas de un vértice a sí mismo).");
 
-		if (peso <= 0)
-			throw new IllegalArgumentException("Error: No se permite agregar una arista con peso 0 o negativo.");
-
-		Arista<V> arista = new Arista<V>(vertice1, vertice2, peso);
+		Arista<V> arista = new Arista<V>(vertice1, vertice2);
 
 		for (Arista<V> aristaExistente : listaDeAristasIncidentes.get(vertice1))
 			if (aristaExistente.equals(arista))
@@ -84,14 +79,6 @@ public class Grafo<V> {
 		return listaDeAristasIncidentes.isEmpty();
 	}
 
-	public int pesoTotal() {
-		int total = 0;
-		for (Arista<V> arista : aristas)
-			total += arista.devolverPeso();
-
-		return total;
-	}
-
 	public boolean existeArista(V vertice1, V vertice2) {
 
 		if (!existeVertice(vertice1) || !existeVertice(vertice2))
@@ -100,7 +87,7 @@ public class Grafo<V> {
 		Set<Arista<V>> aristasDeVertice1 = listaDeAristasIncidentes.get(vertice1);
 
 		int pesoFicticio = 100;
-		Arista<V> buscada = new Arista<V>(vertice1, vertice2, pesoFicticio);
+		Arista<V> buscada = new Arista<V>(vertice1, vertice2);
 		for (Arista<V> unaArista : aristasDeVertice1)
 			if (unaArista.equals(buscada))
 				return true;
@@ -139,7 +126,7 @@ public class Grafo<V> {
 
 		// los vertices se colocan en el objeto Arista en variable "buscada" para
 		// ejecutar el equals
-		Arista<V> buscada = new Arista<V>(vertice1, vertice2, ARISTA_PESO_FICTICIO);
+		Arista<V> buscada = new Arista<V>(vertice1, vertice2);
 		Arista<V> arista = null;
 		for (Arista<V> aristaExistente : listaDeAristasIncidentes.get(vertice1))
 			if (aristaExistente.equals(buscada))
