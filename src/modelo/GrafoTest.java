@@ -15,14 +15,14 @@ import org.junit.runner.RunWith;
 @RunWith(Enclosed.class)
 public class GrafoTest {
 
-	private static String provincia1 = "Buenos Aires";
-	private static String provincia2 = "Santa Fé";
-	private static String provincia3 = "La Pampa";
-	private static String provincia4 = "Entre Ríos";
+	private static Integer vertice1 = 1;
+	private static Integer vertice2 = 2;
+	private static Integer vertice3 = 3;
+	private static Integer vertice4 = 4;
 
 	public static class AgregarVerticeExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarVerticeNuloTest() {
@@ -31,41 +31,41 @@ public class GrafoTest {
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarVerticeYaExistenteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia1);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice1);
 		}
 	}
 
 	public static class AgregarVerticeCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void agregarVerticeTest() {
-			grafo.agregarVertice(provincia1);
-			assertTrue(grafo.existeVertice(provincia1));
+			grafo.agregarVertice(vertice1);
+			assertTrue(grafo.existeVertice(vertice1));
 		}
 	}
 
 	public static class AgregarAristaExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarAristaPrimerVerticeNoExisteTest() {
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarAristaSegundoVerticeNoExisteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarAristaAmbosVerticesNoExistenTest() {
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
@@ -75,141 +75,141 @@ public class GrafoTest {
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarAristaPrimerExtremoNuloTest() {
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(null, provincia2);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(null, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarAristaSegundoExtremoNuloTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarArista(provincia1, null);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarArista(vertice1, null);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarLoopTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarArista(provincia1, provincia1);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarArista(vertice1, vertice1);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarAristaDuplicadaTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.agregarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void agregarAristaDuplicadaAlRevesTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.agregarArista(provincia2, provincia1);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.agregarArista(vertice2, vertice1);
 		}
 
 	}
 
 	public static class AgregarAristaCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void agregarAristaTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
 
-			assertTrue(grafo.existeArista(provincia1, provincia2));
+			assertTrue(grafo.existeArista(vertice1, vertice2));
 
 		}
 	}
 
 	public static class EliminarAristaExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test(expected = IllegalArgumentException.class)
 		public void eliminarAristaPrimerVerticeNoExisteTest() {
-			grafo.agregarVertice(provincia2);
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice2);
+			grafo.eliminarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void eliminarAristaSegundoVerticeNoExisteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.eliminarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void eliminarAristaAmbosVerticesNoExistenTest() {
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.eliminarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void eliminarAristaVerticeNuloTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.eliminarArista(provincia1, null);
+			grafo.agregarVertice(vertice1);
+			grafo.eliminarArista(vertice1, null);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void eliminarAristaInexistenteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.eliminarArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void eliminarAristaDosVecesTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.eliminarArista(provincia1, provincia2);
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.eliminarArista(vertice1, vertice2);
+			grafo.eliminarArista(vertice1, vertice2);
 		}
 
 		@Test
 		public void eliminarAristaConVerticesInvertidosTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.eliminarArista(provincia2, provincia1);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.eliminarArista(vertice2, vertice1);
 
-			assertFalse(grafo.existeArista(provincia1, provincia2));
+			assertFalse(grafo.existeArista(vertice1, vertice2));
 		}
 	}
 
 	public static class EliminarAristaCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void eliminarAristaTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.eliminarArista(vertice1, vertice2);
 
-			assertFalse(grafo.existeArista(provincia1, provincia2));
+			assertFalse(grafo.existeArista(vertice1, vertice2));
 		}
 
 		@Test
 		public void eliminarAristaLaSacaDeLaListaDeAristasTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.eliminarArista(vertice1, vertice2);
 
 			assertEquals(0, grafo.obtenerAristas().size());
 		}
 
 		@Test
 		public void eliminarAristaNoEliminaOtrasAristasTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarVertice(provincia3);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.agregarArista(provincia2, provincia3);
-			grafo.eliminarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarVertice(vertice3);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.agregarArista(vertice2, vertice3);
+			grafo.eliminarArista(vertice1, vertice2);
 
 			assertEquals(1, grafo.obtenerAristas().size());
 		}
@@ -217,7 +217,7 @@ public class GrafoTest {
 
 	public static class ObtenerAristasExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void obtenerAristasGrafoVacioTest() {
@@ -226,9 +226,9 @@ public class GrafoTest {
 
 		@Test
 		public void obtenerAristasDevuelveCopiaTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
 			grafo.obtenerAristas().clear();
 
 			assertEquals(1, grafo.obtenerAristas().size());
@@ -237,15 +237,15 @@ public class GrafoTest {
 
 	public static class ObtenerAristasCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void obtenerAristasCantidadTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarVertice(provincia3);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.agregarArista(provincia2, provincia3);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarVertice(vertice3);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.agregarArista(vertice2, vertice3);
 
 			assertEquals(2, grafo.obtenerAristas().size());
 		}
@@ -253,7 +253,7 @@ public class GrafoTest {
 
 	public static class ObtenerVerticesExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void obtenerVerticesGrafoVacioTest() {
@@ -262,22 +262,22 @@ public class GrafoTest {
 
 		@Test
 		public void obtenerVerticesDevuelveCopiaTest() {
-			grafo.agregarVertice(provincia1);
+			grafo.agregarVertice(vertice1);
 			grafo.obtenerVertices().clear();
 
-			assertTrue(grafo.existeVertice(provincia1));
+			assertTrue(grafo.existeVertice(vertice1));
 		}
 	}
 
 	public static class ObtenerVerticesCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void obtenerVerticesTodosLosVerticesTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarVertice(provincia3);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarVertice(vertice3);
 
 			assertEquals(3, grafo.obtenerVertices().size());
 		}
@@ -285,7 +285,7 @@ public class GrafoTest {
 
 	public static class ExisteVerticeExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test(expected = IllegalArgumentException.class)
 		public void existeVerticeNuloTest() {
@@ -293,102 +293,102 @@ public class GrafoTest {
 		}
 
 		@Test
-		public void existeVerticeConOtroObjetoStringTest() {
-			grafo.agregarVertice(provincia1);
-			assertTrue(grafo.existeVertice(new String("Buenos Aires")));
+		public void existeVerticeConOtroObjetoIntegerTest() {
+			grafo.agregarVertice(vertice1);
+			assertTrue(grafo.existeVertice(Integer.valueOf(1)));
 		}
 	}
 
 	public static class ExisteVerticeCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void existeVerticeExistenteTest() {
-			grafo.agregarVertice(provincia1);
-			assertTrue(grafo.existeVertice(provincia1));
+			grafo.agregarVertice(vertice1);
+			assertTrue(grafo.existeVertice(vertice1));
 		}
 
 		@Test
 		public void existeVerticeInexistenteTest() {
-			grafo.agregarVertice(provincia1);
-			assertFalse(grafo.existeVertice(provincia2));
+			grafo.agregarVertice(vertice1);
+			assertFalse(grafo.existeVertice(vertice2));
 		}
 	}
 
 	public static class ExisteAristaExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test(expected = IllegalArgumentException.class)
 		public void existeAristaPrimerVerticeNoExisteTest() {
-			grafo.agregarVertice(provincia2);
-			grafo.existeArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice2);
+			grafo.existeArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void existeAristaSegundoVerticeNoExisteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.existeArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.existeArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void existeAristaAmbosVerticesNoExistenTest() {
-			grafo.existeArista(provincia1, provincia2);
+			grafo.existeArista(vertice1, vertice2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void existeAristaVerticeNuloTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.existeArista(provincia1, null);
+			grafo.agregarVertice(vertice1);
+			grafo.existeArista(vertice1, null);
 		}
 
 		@Test
 		public void existeAristaAlRevesTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia2, provincia1);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice2, vertice1);
 
-			assertTrue(grafo.existeArista(provincia1, provincia2));
+			assertTrue(grafo.existeArista(vertice1, vertice2));
 		}
 
 		@Test
-		public void existeAristaConOtroObjetoYMismoNombreStringTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
+		public void existeAristaConOtroObjetoYMismoNombreIntegerTest() {
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
 
-			assertTrue(grafo.existeArista(new String("Buenos Aires"), new String("Santa Fé")));
+			assertTrue(grafo.existeArista(Integer.valueOf(1), Integer.valueOf(2)));
 		}
 	}
 
 	public static class ExisteAristaCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void existeAristaExistenteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
 
-			assertTrue(grafo.existeArista(provincia1, provincia2));
+			assertTrue(grafo.existeArista(vertice1, vertice2));
 		}
 
 		@Test
 		public void existeAristaInexistenteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarVertice(provincia3);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarVertice(vertice3);
+			grafo.agregarArista(vertice1, vertice2);
 
-			assertFalse(grafo.existeArista(provincia1, provincia3));
+			assertFalse(grafo.existeArista(vertice1, vertice3));
 		}
 	}
 
 	public static class EsVacioExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void esVacioGrafoRecienCreadoTest() {
@@ -397,20 +397,20 @@ public class GrafoTest {
 
 		@Test
 		public void esVacioConUnVerticeAisladoTest() {
-			grafo.agregarVertice(provincia1);
+			grafo.agregarVertice(vertice1);
 			assertFalse(grafo.esVacio());
 		}
 	}
 
 	public static class EsVacioCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void esVacioConVerticesYAristasTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarArista(provincia1, provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarArista(vertice1, vertice2);
 
 			assertFalse(grafo.esVacio());
 		}
@@ -418,11 +418,11 @@ public class GrafoTest {
 
 	public static class EliminarVerticeExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test(expected = IllegalArgumentException.class)
 		public void eliminarVerticeInexistenteTest() {
-			grafo.eliminarVertice(provincia1);
+			grafo.eliminarVertice(vertice1);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
@@ -433,27 +433,27 @@ public class GrafoTest {
 
 	public static class EliminarVerticeCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void eliminarVerticeAisladoTest() {
-			grafo.agregarVertice(provincia1);
+			grafo.agregarVertice(vertice1);
 
-			grafo.eliminarVertice(provincia1);
+			grafo.eliminarVertice(vertice1);
 
-			assertFalse(grafo.existeVertice(provincia1));
+			assertFalse(grafo.existeVertice(vertice1));
 		}
 
 		@Test
 		public void eliminarVerticeEliminaSusAristasTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarVertice(provincia3);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarVertice(vertice3);
 
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.agregarArista(provincia3, provincia1);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.agregarArista(vertice3, vertice1);
 
-			grafo.eliminarVertice(provincia1);
+			grafo.eliminarVertice(vertice1);
 
 			assertTrue(grafo.obtenerAristas().isEmpty());
 
@@ -461,23 +461,23 @@ public class GrafoTest {
 
 		@Test
 		public void eliminarVerticeNoAfectaOtrasConexionesTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarVertice(provincia3);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarVertice(vertice3);
 
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.agregarArista(provincia2, provincia3);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.agregarArista(vertice2, vertice3);
 
-			grafo.eliminarVertice(provincia1);
+			grafo.eliminarVertice(vertice1);
 
-			assertTrue(grafo.existeArista(provincia2, provincia3));
+			assertTrue(grafo.existeArista(vertice2, vertice3));
 
 		}
 	}
 
 	public static class ObtenerVecinosExcepcionesYCasosBorde {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test(expected = IllegalArgumentException.class)
 		public void obtenerVecinosVerticeNullTest() {
@@ -486,34 +486,34 @@ public class GrafoTest {
 
 		@Test(expected = IllegalArgumentException.class)
 		public void obtenerVecinosVerticeInexistenteTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.obtenerVecinos(provincia2);
+			grafo.agregarVertice(vertice1);
+			grafo.obtenerVecinos(vertice2);
 		}
 
 		@Test
 		public void obtenerVecinosVerticeAisladoTest() {
-			grafo.agregarVertice(provincia1);
+			grafo.agregarVertice(vertice1);
 
-			assertTrue(grafo.obtenerVecinos(provincia1).isEmpty());
+			assertTrue(grafo.obtenerVecinos(vertice1).isEmpty());
 		}
 	}
 
 	public static class ObtenerVecinosCasoFeliz {
 
-		private Grafo<String> grafo = new Grafo<>();
+		private Grafo<Integer> grafo = new Grafo<>();
 
 		@Test
 		public void obtenerVecinosTest() {
-			grafo.agregarVertice(provincia1);
-			grafo.agregarVertice(provincia2);
-			grafo.agregarVertice(provincia3);
-			grafo.agregarVertice(provincia4);
-			grafo.agregarArista(provincia1, provincia2);
-			grafo.agregarArista(provincia3, provincia1);
+			grafo.agregarVertice(vertice1);
+			grafo.agregarVertice(vertice2);
+			grafo.agregarVertice(vertice3);
+			grafo.agregarVertice(vertice4);
+			grafo.agregarArista(vertice1, vertice2);
+			grafo.agregarArista(vertice3, vertice1);
 
-			Set<String> vecinos = grafo.obtenerVecinos(provincia1);
+			Set<Integer> vecinos = grafo.obtenerVecinos(vertice1);
 
-			assertEquals(new HashSet<>(Arrays.asList(provincia2, provincia3)), vecinos);
+			assertEquals(new HashSet<>(Arrays.asList(vertice2, vertice3)), vecinos);
 		}
 	}
 }

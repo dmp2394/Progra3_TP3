@@ -1,0 +1,27 @@
+{
+  "vertices": [
+    {
+      "nombre": 1
+    },
+    {
+      "nombre": 2
+    },
+    {
+      "nombre": 3
+    }
+  ],
+  "aristas": [
+    {
+      "extremo1": 1,
+      "extremo2": 2
+    },
+    {
+      "extremo1": 2,
+      "extremo2": 3
+    },
+    {
+      "extremo1": 3,
+      "extremo2": 1
+    }
+  ]
+}

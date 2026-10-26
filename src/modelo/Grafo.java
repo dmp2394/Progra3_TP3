@@ -86,7 +86,6 @@ public class Grafo<V> {
 
 		Set<Arista<V>> aristasDeVertice1 = listaDeAristasIncidentes.get(vertice1);
 
-		int pesoFicticio = 100;
 		Arista<V> buscada = new Arista<V>(vertice1, vertice2);
 		for (Arista<V> unaArista : aristasDeVertice1)
 			if (unaArista.equals(buscada))
