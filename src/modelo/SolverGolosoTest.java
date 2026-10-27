@@ -2,7 +2,6 @@ package modelo;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Comparator;
 import java.util.Set;
 
 import org.junit.Test;
@@ -11,31 +10,14 @@ public class SolverGolosoTest {
 
 	@Test
 	public void resolverOrdenandoPorCantidadDeVecinosTest() {
-		SolverGoloso solver = new SolverGoloso(ejemploEnunciadoTP(), new Comparator<Integer>() {
-			@Override
-			public int compare(Integer uno, Integer otro) {
-				return -uno.getBeneficio() + otro.getBeneficio();
-			}
-		});
+		SolverGoloso solver = new SolverGoloso(grafoEjemploEnunciadoTP());
 
-		// voy a dejar anotado asi nomas el algoritmo goloso:
-		// sea A un conjunto vacio
-		// obtengo el vertice con mas vecinos, lo agrego a A y lo marco como visitado
-		// loop:
-		// paso por todos los vertices no visitados hasta que llegue a que uno no es
-		// vecino de alguno de A. La forma de pasar es mediante una lista ordenada con
-		// cantidad de vecinos por vertice
-		// si pasa esto, A no es conjunto dominante, entonces luego agrego este que no
-		// es vecino de alguno de A. Si no pasa eso, A es conjunto dominante (minimo
-		// tentativo)
-		// vuelvo a pasar por todos los vertices no cubiertos, o sea repito el loop.
-		// Condicion de corte: Todos los no visitados son vecinos de A
 		Set<Integer> solucion = solver.resolver();
 
-		assertEquals(Set.of(4, 3, 5, 2), solucion);
+		assertEquals(Set.of(2, 4), solucion);
 	}
 
-	private Grafo<Integer> ejemploEnunciadoTP() {
+	private Grafo<Integer> grafoEjemploEnunciadoTP() {
 		Grafo<Integer> grafo = new Grafo<>();
 
 		grafo.agregarVertice(1);
