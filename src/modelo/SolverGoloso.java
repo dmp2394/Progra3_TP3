@@ -28,16 +28,20 @@ public class SolverGoloso {
 		// tentativo)
 		// vuelvo a pasar por todos los vertices no cubiertos, o sea repito el loop.
 		// Condicion de corte: Todos los no visitados son vecinos de A
-		Set<Integer> solucion = new HashSet<>();
+		Set<Integer> A = new HashSet<>();
 
-		for (Integer vertice : verticesOrdenadosPorCantidadDeVecinos()) {
+		ArrayList<Integer> verticesOrdenadosDescPorCantidadDeVecinos = verticesOrdenadosDescPorCantidadDeVecinos();
+		A.add(verticesOrdenadosDescPorCantidadDeVecinos.get(0));
+
+		for (Integer vertice : verticesOrdenadosDescPorCantidadDeVecinos()) {
+			A.add(vertice);
 
 		}
 
-		return solucion;
+		return A;
 	}
 
-	private ArrayList<Integer> verticesOrdenadosPorCantidadDeVecinos() {
+	private ArrayList<Integer> verticesOrdenadosDescPorCantidadDeVecinos() {
 		ArrayList<Integer> ret = _instancia.obtenerVertices();
 
 		// Ordena de mayor a menor
