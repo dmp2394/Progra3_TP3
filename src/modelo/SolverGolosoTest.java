@@ -22,15 +22,20 @@ public class SolverGolosoTest {
 		// sea A un conjunto vacio
 		// obtengo el vertice con mas vecinos, lo agrego a A y lo marco como visitado
 		// loop:
-		// paso por todos los vertices no visitados hasta que llegue a que uno no es vecino de alguno de A. La forma de pasar es mediante una lista ordenada con cantidad de vecinos por vertice
-		// si pasa esto, A no es conjunto dominante, entonces luego agrego este que no es vecino de alguno de A. Si no pasa eso, A es conjunto dominante (minimo tentativo)
-		// vuelvo a pasar por todos los vertices no cubiertos, o sea repito el loop. Condicion de corte: Todos los no visitados son vecinos de A
+		// paso por todos los vertices no visitados hasta que llegue a que uno no es
+		// vecino de alguno de A. La forma de pasar es mediante una lista ordenada con
+		// cantidad de vecinos por vertice
+		// si pasa esto, A no es conjunto dominante, entonces luego agrego este que no
+		// es vecino de alguno de A. Si no pasa eso, A es conjunto dominante (minimo
+		// tentativo)
+		// vuelvo a pasar por todos los vertices no cubiertos, o sea repito el loop.
+		// Condicion de corte: Todos los no visitados son vecinos de A
 		Set<Integer> solucion = solver.resolver();
 
 		assertEquals(Set.of(4, 3, 5, 2), solucion);
 	}
 
-	private Instancia ejemploEnunciadoTP() {
+	private Grafo<Integer> ejemploEnunciadoTP() {
 		Grafo<Integer> grafo = new Grafo<>();
 
 		grafo.agregarVertice(1);
@@ -48,7 +53,7 @@ public class SolverGolosoTest {
 		grafo.agregarArista(1, 2);
 		grafo.agregarArista(2, 3);
 
-		return (new Instancia(grafo));
+		return (grafo);
 
 	}
 }

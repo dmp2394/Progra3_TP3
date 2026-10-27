@@ -8,11 +8,11 @@ import java.util.Set;
 
 public class SolverGoloso {
 
-	private Instancia _instancia;
+	private Grafo<Integer> _instancia;
 	private Comparator<Arista<Integer>> _comparador;
 
-	public SolverGoloso(Instancia ejemploEnunciadoTP, Comparator<Integer> comparator) {
-		// TODO Auto-generated constructor stub
+	public SolverGoloso(Grafo<Integer> ejemploEnunciadoTP, Comparator<Integer> comparator) {
+
 		_instancia = ejemploEnunciadoTP;
 	}
 
@@ -23,6 +23,8 @@ public class SolverGoloso {
 		for (Arista<Integer> arista : verticesOrdenadosPorCantidadDeVecinos()) {
 
 		}
+
+		return new HashSet<>();
 	}
 
 	private ArrayList<Arista<Integer>> verticesOrdenadosPorCantidadDeVecinos() {
