@@ -9,6 +9,7 @@ import java.util.Set;
 public class SolverGoloso {
 
 	private Grafo<Integer> _instancia;
+	
 
 	public SolverGoloso(Grafo<Integer> ejemploEnunciadoTP) {
 
@@ -30,15 +31,32 @@ public class SolverGoloso {
 		// Condicion de corte: Todos los no visitados son vecinos de A
 		Set<Integer> A = new HashSet<>();
 
-		ArrayList<Integer> verticesOrdenadosDescPorCantidadDeVecinos = verticesOrdenadosDescPorCantidadDeVecinos();
+		/*ArrayList<Integer> verticesOrdenadosDescPorCantidadDeVecinos = verticesOrdenadosDescPorCantidadDeVecinos();
 		A.add(verticesOrdenadosDescPorCantidadDeVecinos.get(0));
 
 		for (Integer vertice : verticesOrdenadosDescPorCantidadDeVecinos()) {
 			A.add(vertice);
 
-		}
+		}*/
+		
 
 		return A;
+	}
+	
+	public int aporte(Vertice v, Set<Vertice> dominados) {
+	    int cantidad = 0;
+
+	    if (!dominados.contains(v)) {
+	        cantidad++;
+	    }
+
+	    for (Vertice vecino : v.getVecinos()) {
+	        if (!dominados.contains(vecino)) {
+	            cantidad++;
+	        }
+	    }
+
+	    return cantidad;
 	}
 
 	private ArrayList<Integer> verticesOrdenadosDescPorCantidadDeVecinos() {

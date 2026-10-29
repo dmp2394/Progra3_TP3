@@ -6,14 +6,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Grafo<V> {
+public class Grafo<V extends Vertice> {
 
 	private Map<V, Set<Arista<V>>> listaDeAristasIncidentes;
 	private ArrayList<Arista<V>> aristas;
+	private Map<Integer, Vertice> vertices;
 
 	public Grafo() {
 		listaDeAristasIncidentes = new HashMap<>();
 		aristas = new ArrayList<>();
+		vertices = new HashMap<>();
 
 	}
 
@@ -23,6 +25,8 @@ public class Grafo<V> {
 
 		if (listaDeAristasIncidentes.containsKey(vertice))
 			throw new IllegalArgumentException("Error: El vértice ya existe en el grafo.");
+		
+		vertices.put(vertice.getId(), vertice);
 
 		listaDeAristasIncidentes.put(vertice, new HashSet<>());
 	}
