@@ -60,7 +60,6 @@ public class SolverGoloso {
             int aporteActual = aporte(candidato, dominados);
             
             
-            
             /* Esta parte verifica si todavía no hay un candidato elegido,
                si el candidato actual tiene un aporte mayor o, en caso
                de empate, si tiene un número menor.
