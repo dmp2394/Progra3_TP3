@@ -6,141 +6,185 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Grafo<V extends Vertice> {
+public class Grafo<V> {
 
-	private Map<V, Set<Arista<V>>> listaDeAristasIncidentes;
-	private ArrayList<Arista<V>> aristas;
-	private Map<Integer, Vertice> vertices;
+    private Map<V, Set<Arista<V>>> listaDeAristasIncidentes;
+    private ArrayList<Arista<V>> aristas;
 
-	public Grafo() {
-		listaDeAristasIncidentes = new HashMap<>();
-		aristas = new ArrayList<>();
-		vertices = new HashMap<>();
+    public Grafo() {
+        listaDeAristasIncidentes = new HashMap<>();
+        aristas = new ArrayList<>();
+    }
 
-	}
+    public void agregarVertice(V vertice) {
+        if (vertice == null) {
+            throw new IllegalArgumentException(
+                "Error: El vértice no puede ser nulo."
+            );
+        }
 
-	public void agregarVertice(V vertice) {
-		if (vertice == null)
-			throw new IllegalArgumentException("Error: El vértice no puede ser nulo.");
+        if (listaDeAristasIncidentes.containsKey(vertice)) {
+            throw new IllegalArgumentException(
+                "Error: El vértice ya existe en el grafo."
+            );
+        }
 
-		if (listaDeAristasIncidentes.containsKey(vertice))
-			throw new IllegalArgumentException("Error: El vértice ya existe en el grafo.");
-		
-		vertices.put(vertice.getId(), vertice);
+        listaDeAristasIncidentes.put(vertice, new HashSet<>());
+    }
 
-		listaDeAristasIncidentes.put(vertice, new HashSet<>());
-	}
+    public void agregarArista(V vertice1, V vertice2) {
+        if (!listaDeAristasIncidentes.containsKey(vertice1)
+                || !listaDeAristasIncidentes.containsKey(vertice2)) {
+            throw new IllegalArgumentException(
+                "Error: Uno o ambos vértices no existen en el grafo."
+            );
+        }
 
-	public void agregarArista(V vertice1, V vertice2) {
-		if (!listaDeAristasIncidentes.containsKey(vertice1) || !listaDeAristasIncidentes.containsKey(vertice2))
-			throw new IllegalArgumentException("Error: Uno o ambos vértices no existen en el grafo.");
+        if (vertice1.equals(vertice2)) {
+            throw new IllegalArgumentException(
+                "Error: No se permiten loops."
+            );
+        }
 
-		if (vertice1.equals(vertice2))
-			throw new IllegalArgumentException("Error: No se permiten loops (aristas de un vértice a sí mismo).");
+        Arista<V> arista = new Arista<>(vertice1, vertice2);
 
-		Arista<V> arista = new Arista<V>(vertice1, vertice2);
+        for (Arista<V> aristaExistente
+                : listaDeAristasIncidentes.get(vertice1)) {
+            if (aristaExistente.equals(arista)) {
+                throw new IllegalArgumentException(
+                    "Error: La arista ya existe entre estos vértices."
+                );
+            }
+        }
 
-		for (Arista<V> aristaExistente : listaDeAristasIncidentes.get(vertice1))
-			if (aristaExistente.equals(arista))
-				throw new IllegalArgumentException("Error: La arista ya existe entre estos vértices.");
+        listaDeAristasIncidentes.get(vertice1).add(arista);
+        listaDeAristasIncidentes.get(vertice2).add(arista);
+        aristas.add(arista);
+    }
 
-		listaDeAristasIncidentes.get(vertice1).add(arista);
-		listaDeAristasIncidentes.get(vertice2).add(arista);
-		aristas.add(arista);
+    public Set<V> obtenerVecinos(V vertice) {
+        if (!existeVertice(vertice)) {
+            throw new IllegalArgumentException(
+                "Error: El vértice no existe en el grafo."
+            );
+        }
 
-	}
+        Set<V> vecinos = new HashSet<>();
 
-	public Set<V> obtenerVecinos(V vertice) {
-		if (!existeVertice(vertice))
-			throw new IllegalArgumentException("Error: El vértice no existe en el grafo.");
+        for (Arista<V> arista
+                : listaDeAristasIncidentes.get(vertice)) {
+            V vecino = arista.obtenerExtremo1().equals(vertice)
+                ? arista.obtenerExtremo2()
+                : arista.obtenerExtremo1();
 
-		Set<V> vecinos = new HashSet<>();
+            vecinos.add(vecino);
+        }
 
-		for (Arista<V> arista : listaDeAristasIncidentes.get(vertice)) {
+        return vecinos;
+    }
 
-			V vecino = arista.obtenerExtremo1().equals(vertice) ? arista.obtenerExtremo2() : arista.obtenerExtremo1();
+    public ArrayList<Arista<V>> obtenerAristas() {
+        return new ArrayList<>(aristas);
+    }
 
-			vecinos.add(vecino);
-		}
+    public ArrayList<V> obtenerVertices() {
+        ArrayList<V> vertices = new ArrayList<>();
 
-		return vecinos;
-	}
+        for (V vertice : listaDeAristasIncidentes.keySet()) {
+            vertices.add(vertice);
+        }
 
-	public ArrayList<Arista<V>> obtenerAristas() {
-		return new ArrayList<Arista<V>>(aristas);
-	}
+        return vertices;
+    }
 
-	public ArrayList<V> obtenerVertices() {
+    public boolean esVacio() {
+        return listaDeAristasIncidentes.isEmpty();
+    }
 
-		ArrayList<V> vertices = new ArrayList<>();
-		for (V vertice : listaDeAristasIncidentes.keySet())
-			vertices.add(vertice);
+    public boolean existeArista(V vertice1, V vertice2) {
+        if (!existeVertice(vertice1) || !existeVertice(vertice2)) {
+            throw new IllegalArgumentException(
+                "Error: Uno o ambos vértices no existen."
+            );
+        }
 
-		return vertices;
-	}
+        Set<Arista<V>> aristasDeVertice1 =
+            listaDeAristasIncidentes.get(vertice1);
 
-	public boolean esVacio() {
-		return listaDeAristasIncidentes.isEmpty();
-	}
+        Arista<V> buscada = new Arista<>(vertice1, vertice2);
 
-	public boolean existeArista(V vertice1, V vertice2) {
+        for (Arista<V> unaArista : aristasDeVertice1) {
+            if (unaArista.equals(buscada)) {
+                return true;
+            }
+        }
 
-		if (!existeVertice(vertice1) || !existeVertice(vertice2))
-			throw new IllegalArgumentException("Error: Uno o ambos vertices no existen.");
+        return false;
+    }
 
-		Set<Arista<V>> aristasDeVertice1 = listaDeAristasIncidentes.get(vertice1);
+    public void eliminarVertice(V vertice) {
+        if (vertice == null) {
+            throw new IllegalArgumentException(
+                "Error: No se puede borrar el vértice null."
+            );
+        }
 
-		Arista<V> buscada = new Arista<V>(vertice1, vertice2);
-		for (Arista<V> unaArista : aristasDeVertice1)
-			if (unaArista.equals(buscada))
-				return true;
+        if (!listaDeAristasIncidentes.containsKey(vertice)) {
+            throw new IllegalArgumentException(
+                "Error: El vértice no existe en el grafo."
+            );
+        }
 
-		return false;
-	}
+        ArrayList<Arista<V>> aristasDelVertice =
+            new ArrayList<>(listaDeAristasIncidentes.get(vertice));
 
-	public void eliminarVertice(V vertice) {
-		if (vertice == null) {
-			throw new IllegalArgumentException("Error: No se puede borrar el vertice null");
-		}
+        for (Arista<V> arista : aristasDelVertice) {
+            eliminarArista(
+                arista.obtenerExtremo1(),
+                arista.obtenerExtremo2()
+            );
+        }
 
-		if (!listaDeAristasIncidentes.containsKey(vertice)) {
-			throw new IllegalArgumentException("Error: El vértice no existe en el grafo.");
-		}
+        listaDeAristasIncidentes.remove(vertice);
+    }
 
-		ArrayList<Arista<V>> aristasDelVertice = new ArrayList<>(listaDeAristasIncidentes.get(vertice));
+    public boolean existeVertice(V vertice) {
+        if (vertice == null) {
+            throw new IllegalArgumentException(
+                "Error: El vértice no puede ser nulo."
+            );
+        }
 
-		for (Arista<V> arista : aristasDelVertice) {
-			eliminarArista(arista.obtenerExtremo1(), arista.obtenerExtremo2());
-		}
+        return listaDeAristasIncidentes.containsKey(vertice);
+    }
 
-		listaDeAristasIncidentes.remove(vertice);
-	}
+    public void eliminarArista(V vertice1, V vertice2) {
+        if (!listaDeAristasIncidentes.containsKey(vertice1)
+                || !listaDeAristasIncidentes.containsKey(vertice2)) {
+            throw new IllegalArgumentException(
+                "Error: Uno o ambos vértices no existen."
+            );
+        }
 
-	public boolean existeVertice(V vertice) {
-		if (vertice == null)
-			throw new IllegalArgumentException("Error: El vértice no puede ser nulo.");
+        Arista<V> buscada = new Arista<>(vertice1, vertice2);
+        Arista<V> arista = null;
 
-		return listaDeAristasIncidentes.containsKey(vertice);
-	}
+        for (Arista<V> aristaExistente
+                : listaDeAristasIncidentes.get(vertice1)) {
+            if (aristaExistente.equals(buscada)) {
+                arista = aristaExistente;
+                break;
+            }
+        }
 
-	public void eliminarArista(V vertice1, V vertice2) {
-		if (!listaDeAristasIncidentes.containsKey(vertice1) || !listaDeAristasIncidentes.containsKey(vertice2))
-			throw new IllegalArgumentException("Error: Uno o ambos vértices no existen en el grafo.");
+        if (arista == null) {
+            throw new IllegalArgumentException(
+                "Error: La arista no existe entre estos vértices."
+            );
+        }
 
-		// los vertices se colocan en el objeto Arista en variable "buscada" para
-		// ejecutar el equals
-		Arista<V> buscada = new Arista<V>(vertice1, vertice2);
-		Arista<V> arista = null;
-		for (Arista<V> aristaExistente : listaDeAristasIncidentes.get(vertice1))
-			if (aristaExistente.equals(buscada))
-				arista = aristaExistente;
-
-		if (arista == null)
-			throw new IllegalArgumentException("Error: La arista no existe entre estos vértices.");
-
-		listaDeAristasIncidentes.get(vertice1).remove(arista);
-		listaDeAristasIncidentes.get(vertice2).remove(arista);
-		aristas.remove(arista);
-	}
-
+        listaDeAristasIncidentes.get(vertice1).remove(arista);
+        listaDeAristasIncidentes.get(vertice2).remove(arista);
+        aristas.remove(arista);
+    }
 }

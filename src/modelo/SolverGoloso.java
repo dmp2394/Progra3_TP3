@@ -1,78 +1,102 @@
 package modelo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
 public class SolverGoloso {
 
-	private Grafo<Integer> _instancia;
-	
+    private final Grafo<Integer> instancia;
 
-	public SolverGoloso(Grafo<Integer> ejemploEnunciadoTP) {
+    public SolverGoloso(Grafo<Integer> instancia) {
+        if (instancia == null) {
+            throw new IllegalArgumentException(
+                "El grafo no puede ser nulo."
+            );
+        }
 
-		_instancia = ejemploEnunciadoTP;
-	}
+        this.instancia = instancia;
+    }
 
-	public Set<Integer> resolver() {
-		// voy a dejar anotado asi nomas el algoritmo goloso:
-		// sea A un conjunto vacio
-		// obtengo el vertice con mas vecinos, lo agrego a A y lo marco como visitado
-		// loop:
-		// paso por todos los vertices no visitados hasta que llegue a que uno no es
-		// vecino de alguno de A. La forma de pasar es mediante una lista ordenada con
-		// cantidad de vecinos por vertice
-		// si pasa esto, A no es conjunto dominante, entonces luego agrego este que no
-		// es vecino de alguno de A. Si no pasa eso, A es conjunto dominante (minimo
-		// tentativo)
-		// vuelvo a pasar por todos los vertices no cubiertos, o sea repito el loop.
-		// Condicion de corte: Todos los no visitados son vecinos de A
-		Set<Integer> A = new HashSet<>();
+    
+    
+    public Set<Integer> resolver() {
+        Set<Integer> solucion = new HashSet<>();
+        Set<Integer> dominados = new HashSet<>();
 
-		/*ArrayList<Integer> verticesOrdenadosDescPorCantidadDeVecinos = verticesOrdenadosDescPorCantidadDeVecinos();
-		A.add(verticesOrdenadosDescPorCantidadDeVecinos.get(0));
+        int cantidadVertices = instancia.obtenerVertices().size();
 
-		for (Integer vertice : verticesOrdenadosDescPorCantidadDeVecinos()) {
-			A.add(vertice);
+        /*El codigo básicamente lo que hace es agregar a dominados el que tenga el mejor vertice.
+         * El mejor vertice es básicamente el que suma mas vertices.
+         * Cuando los suma guarda al mejor vertice en solucion y a los dominados en dominados.
+         * y asi hasta que el conjunto dominados sea mejor a cantidadVertices.
+         * */
+        
+        while (dominados.size() < cantidadVertices) {
+            Integer mejor = elegirMejorVertice(dominados);
 
-		}*/
-		
+            // Agregamos el elegido al conjunto dominante.
+            solucion.add(mejor);
 
-		return A;
-	}
-	
-	public int aporte(Vertice v, Set<Vertice> dominados) {
-	    int cantidad = 0;
+            // Quedan cubiertos el elegido y sus vecinos.
+            dominados.add(mejor);
+            dominados.addAll(instancia.obtenerVecinos(mejor));
+        }
 
-	    if (!dominados.contains(v)) {
-	        cantidad++;
-	    }
+        return solucion;
+    }
+    
+    
+    
+    
+    
+    
 
-	    for (Vertice vecino : v.getVecinos()) {
-	        if (!dominados.contains(vecino)) {
-	            cantidad++;
-	        }
-	    }
+    private Integer elegirMejorVertice(Set<Integer> dominados) {
+        Integer mejor = null;
+        int mayorAporte = -1; /// arranca en -1 porque no hay aporte posible con -1. Podrian aportar 0 pero no -1.
 
-	    return cantidad;
-	}
+        for (Integer candidato : instancia.obtenerVertices()) {
+        	
+            int aporteActual = aporte(candidato, dominados);
+            
+            
+            
+            /* Esta parte verifica si todavía no hay un candidato elegido,
+               si el candidato actual tiene un aporte mayor o, en caso
+               de empate, si tiene un número menor.
+             */
+            
+            if (mejor == null
+                    || aporteActual > mayorAporte
+                    || (aporteActual == mayorAporte
+                        && candidato < mejor)) {
 
-	private ArrayList<Integer> verticesOrdenadosDescPorCantidadDeVecinos() {
-		ArrayList<Integer> ret = _instancia.obtenerVertices();
+                mejor = candidato;
+                mayorAporte = aporteActual;
+            }
+            
+        }
 
-		// Ordena de mayor a menor
-		Comparator<Integer> comparador = new Comparator<Integer>() {
-			@Override
-			public int compare(Integer uno, Integer otro) {
-				return _instancia.obtenerVecinos(otro).size() - _instancia.obtenerVecinos(uno).size();
-			}
-		};
+        return mejor;
+    }
+    
+    
 
-		Collections.sort(ret, comparador);
+    public int aporte(Integer vertice, Set<Integer> dominados) {
+        int cantidad = 0;
 
-		return ret;
-	}
+        // El propio vértice también cuenta si no está dominado.
+        if (!dominados.contains(vertice)) {
+            cantidad++;
+        }
 
+        // Contamos únicamente los vecinos aún no dominados.
+        for (Integer vecino : instancia.obtenerVecinos(vertice)) {
+            if (!dominados.contains(vecino)) {
+                cantidad++;
+            }
+        }
+
+        return cantidad;
+    }
 }
