@@ -1,0 +1,23 @@
+{
+  "vertices": [
+    { "nombre": 1 },
+    { "nombre": 2 },
+    { "nombre": 3 },
+    { "nombre": 4 },
+    { "nombre": 5 },
+    { "nombre": 6 },
+    { "nombre": 7 },
+    { "nombre": 8 }
+  ],
+  "aristas": [
+    { "extremo1": 1, "extremo2": 2 },
+    { "extremo1": 1, "extremo2": 3 },
+    { "extremo1": 1, "extremo2": 8 },
+    { "extremo1": 2, "extremo2": 8 },
+    { "extremo1": 2, "extremo2": 4 },
+    { "extremo1": 3, "extremo2": 5 },
+    { "extremo1": 5, "extremo2": 6 },
+    { "extremo1": 6, "extremo2": 7 },
+    { "extremo1": 7, "extremo2": 8 }
+  ]
+}

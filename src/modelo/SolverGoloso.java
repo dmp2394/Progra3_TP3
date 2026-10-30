@@ -30,7 +30,7 @@ public class SolverGoloso {
 		int cantidadVerticesDeInstancia = instancia.obtenerVertices().size();
 
 		while (dominados.size() < cantidadVerticesDeInstancia) {
-			Integer mejorVerticeElegido = elegirMejorVertice(dominados);
+			Integer mejorVerticeElegido = elegirVerticeCuyosVecinosAportanMasNoDominados(dominados);
 
 			solucion.add(mejorVerticeElegido);
 
@@ -42,7 +42,7 @@ public class SolverGoloso {
 		return solucion;
 	}
 
-	private Integer elegirMejorVertice(Set<Integer> dominados) {
+	private Integer elegirVerticeCuyosVecinosAportanMasNoDominados(Set<Integer> dominados) {
 		Integer mejor = null;
 		// arranca en -1 porque no hay aporte posible con -1. Podrian aportar 0 pero no
 		// -1.
