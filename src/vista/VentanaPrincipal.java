@@ -2,6 +2,7 @@ package vista;
 
 import java.awt.EventQueue;
 import java.io.File;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -17,15 +18,15 @@ import org.graphstream.ui.swing_viewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
 
 import controlador.ControladorPrincipal;
+import modelo.Aplicacion;
 import modelo.Arista;
-import modelo.ConjuntoDominante;
 import modelo.ObservadorConjuntoDominante;
 
 public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private JFrame _frame;
 	private ControladorPrincipal _controlador;
-	private ConjuntoDominante _conjuntoDominante;
+	private Aplicacion _aplicacion;
 	private Graph _grafo;
 
 	public static void main(String[] args) {
@@ -44,13 +45,13 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	}
 
 	public VentanaPrincipal() {
-		_conjuntoDominante = new ConjuntoDominante();
-		_controlador = new ControladorPrincipal(_conjuntoDominante);
+		_aplicacion = new Aplicacion();
+		_controlador = new ControladorPrincipal(_aplicacion);
 
 		initialize();
 
 		// registro luego de inicializar
-		_conjuntoDominante.registrar(this);
+		_aplicacion.registrar(this);
 	}
 
 	private void initialize() {
@@ -109,7 +110,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	}
 
 	private void resolverGoloso() {
-		// _controlador.resolver();
+		_controlador.resolver();
 	}
 
 	private ViewPanel crearVisualizacionGrafo() {
@@ -124,8 +125,9 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		return panelGrafo;
 	}
 
+	// TODO: el parametro esta al pedo aca? ya es un atributo de clase
 	@Override
-	public void notificar(ConjuntoDominante conjuntoDominante) {
+	public void notificarNuevoGrafo(Aplicacion aplicacion) {
 		mostrarGrafo();
 	}
 
@@ -138,19 +140,40 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		agregarAristas();
 	}
 
+	// TODO: va directo al modelo. Esta mal?
 	private void agregarVertices() {
-		for (Integer vertice : _conjuntoDominante.obtenerVertices()) {
+		for (Integer vertice : _aplicacion.obtenerVertices()) {
 			Node nodo = _grafo.addNode(String.valueOf(vertice));
 			nodo.setAttribute("ui.label", String.valueOf(vertice));
 		}
 	}
 
+	// TODO: va directo al modelo. Esta mal?
 	private void agregarAristas() {
-		for (Arista<Integer> arista : _conjuntoDominante.obtenerAristas()) {
+		for (Arista<Integer> arista : _aplicacion.obtenerAristas()) {
 			String extremo1 = String.valueOf(arista.obtenerExtremo1());
 			String extremo2 = String.valueOf(arista.obtenerExtremo2());
 			String id = extremo1 + "-" + extremo2;
 			_grafo.addEdge(id, extremo1, extremo2);
 		}
 	}
+
+	@Override
+	public void notificarSolucion(Aplicacion aplicacion) {
+		mostrarSolucionSobreGrafo(aplicacion);
+	}
+
+	private void mostrarSolucionSobreGrafo(Aplicacion aplicacion) {
+		Set<Integer> conjuntoSolucion = aplicacion.obtenerSolucion();
+
+		pintarSolucionSobreGrafo(conjuntoSolucion);
+	}
+
+	private void pintarSolucionSobreGrafo(Set<Integer> conjuntoSolucion) {
+		for (Integer vertice : conjuntoSolucion) {
+			Node nodo = _grafo.getNode(String.valueOf(vertice));
+			nodo.setAttribute("ui.style", "fill-color: yellow;");
+		}
+	}
+
 }

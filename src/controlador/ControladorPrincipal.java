@@ -1,15 +1,15 @@
 package controlador;
 
+import modelo.Aplicacion;
 import modelo.Arista;
-import modelo.ConjuntoDominante;
 import modelo.GrafoJSON;
 
 public class ControladorPrincipal {
 
-	private ConjuntoDominante _orquestador;
+	private Aplicacion _aplicacion;
 
-	public ControladorPrincipal(ConjuntoDominante orquestador) {
-		_orquestador = orquestador;
+	public ControladorPrincipal(Aplicacion aplicacion) {
+		_aplicacion = aplicacion;
 	}
 
 	public void cargarGrafoDesdeJSON(String ruta) {
@@ -20,12 +20,17 @@ public class ControladorPrincipal {
 		}
 
 		for (Integer vertice : archivo.obtenerVertices()) {
-			_orquestador.agregarVertice(vertice);
+			_aplicacion.agregarVertice(vertice);
 		}
 
 		for (Arista<Integer> arista : archivo.obtenerAristas()) {
-			_orquestador.agregarArista(arista);
+			_aplicacion.agregarArista(arista);
 		}
 
+	}
+
+	public void resolver() {
+		// TODO Auto-generated method stub
+		_aplicacion.resolver();
 	}
 }
