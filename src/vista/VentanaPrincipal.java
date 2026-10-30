@@ -9,16 +9,20 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import controlador.ControladorPrincipal;
+import modelo.Orquestador;
+
 public class VentanaPrincipal {
 
-	private JFrame frame;
+	private JFrame _frame;
+	private ControladorPrincipal _controlador;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					VentanaPrincipal window = new VentanaPrincipal();
-					window.frame.setVisible(true);
+					window._frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -27,11 +31,12 @@ public class VentanaPrincipal {
 	}
 
 	public VentanaPrincipal() {
+		_controlador = new ControladorPrincipal(new Orquestador());
 		initialize();
 	}
 
 	private void initialize() {
-		frame = new JFrame();
+		_frame = new JFrame();
 		configurarVentana();
 
 		JPanel panelContenido = crearPanelContenido();
@@ -41,18 +46,18 @@ public class VentanaPrincipal {
 	}
 
 	private void configurarVentana() {
-		frame.setTitle("Bienvenido - Conjunto Dominante Mínimo");
-		frame.setSize(1024, 768);
-		frame.setResizable(false);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		_frame.setTitle("Bienvenido - Conjunto Dominante Mínimo");
+		_frame.setSize(1024, 768);
+		_frame.setResizable(false);
+		_frame.setLocationRelativeTo(null);
+		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	private JPanel crearPanelContenido() {
 		JPanel panelContenido = new JPanel();
 		panelContenido.setLayout(null);
 
-		frame.setContentPane(panelContenido);
+		_frame.setContentPane(panelContenido);
 		return panelContenido;
 	}
 
@@ -68,9 +73,9 @@ public class VentanaPrincipal {
 		chooser.setFileFilter(new FileNameExtensionFilter("Archivos JSON (*.json)", "json"));
 		chooser.setAcceptAllFileFilterUsed(false);
 
-		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+		if (chooser.showOpenDialog(_frame) == JFileChooser.APPROVE_OPTION) {
 			File archivo = chooser.getSelectedFile();
-			// acá se lo pasás al controlador / capa de negocio
+			_controlador.cargarGrafoDesdeJSON(archivo.getAbsolutePath());
 		}
 	}
 

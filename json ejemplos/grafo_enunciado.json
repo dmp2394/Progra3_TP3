@@ -1,14 +1,5 @@
 {
-  "vertices": [
-    { "nombre": 1 },
-    { "nombre": 2 },
-    { "nombre": 3 },
-    { "nombre": 4 },
-    { "nombre": 5 },
-    { "nombre": 6 },
-    { "nombre": 7 },
-    { "nombre": 8 }
-  ],
+  "vertices": [1,2,3,4,5,6,7,8],
   "aristas": [
     { "extremo1": 1, "extremo2": 2 },
     { "extremo1": 1, "extremo2": 3 },
