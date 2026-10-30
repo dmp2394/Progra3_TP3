@@ -72,5 +72,6 @@ public class Aplicacion {
 
 	public void borrarGrafoActual() {
 		_grafo = new Grafo<Integer>();
+		_solucion = new HashSet<>();
 	}
 }
