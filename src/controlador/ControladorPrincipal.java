@@ -13,11 +13,14 @@ public class ControladorPrincipal {
 	}
 
 	public void cargarGrafoDesdeJSON(String ruta) {
+
 		GrafoJSON archivo = GrafoJSON.leerJSON(ruta);
 
 		if (archivo == null || archivo.obtenerVertices().isEmpty()) {
 			throw new IllegalArgumentException("El archivo JSON no tiene vértices.");
 		}
+
+		_aplicacion.borrarGrafoActual();
 
 		for (Integer vertice : archivo.obtenerVertices()) {
 			_aplicacion.agregarVertice(vertice);

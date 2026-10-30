@@ -69,4 +69,8 @@ public class Aplicacion {
 	public Set<Integer> obtenerSolucion() {
 		return Collections.unmodifiableSet(_solucion);
 	}
+
+	public void borrarGrafoActual() {
+		_grafo = new Grafo<Integer>();
+	}
 }
