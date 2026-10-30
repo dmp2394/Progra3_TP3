@@ -38,6 +38,29 @@ public class Aplicacion {
 		notificarObservadoresNuevoGrafo();
 	}
 
+	public void cargarGrafo(List<Integer> vertices, List<Arista<Integer>> aristas) {
+		if (vertices == null || aristas == null) {
+			throw new IllegalArgumentException("Los datos del grafo no pueden ser null.");
+		}
+
+		Grafo<Integer> grafoCargado = new Grafo<Integer>();
+
+		for (Integer vertice : vertices) {
+			grafoCargado.agregarVertice(vertice);
+		}
+
+		for (Arista<Integer> arista : aristas) {
+			grafoCargado.agregarArista(
+				arista.obtenerExtremo1(),
+				arista.obtenerExtremo2()
+			);
+		}
+
+		_grafo = grafoCargado;
+		_solucion = new HashSet<>();
+		notificarObservadoresNuevoGrafo();
+	}
+
 	private void notificarObservadoresNuevoGrafo() {
 		for (ObservadorConjuntoDominante observador : _observadores)
 			observador.notificarNuevoGrafo(this);

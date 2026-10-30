@@ -1,7 +1,6 @@
 package controlador;
 
 import modelo.Aplicacion;
-import modelo.Arista;
 import modelo.GrafoJSON;
 
 public class ControladorPrincipal {
@@ -20,15 +19,10 @@ public class ControladorPrincipal {
 			throw new IllegalArgumentException("El archivo JSON no tiene vértices.");
 		}
 
-		_aplicacion.borrarGrafoActual();
-
-		for (Integer vertice : archivo.obtenerVertices()) {
-			_aplicacion.agregarVertice(vertice);
-		}
-
-		for (Arista<Integer> arista : archivo.obtenerAristas()) {
-			_aplicacion.agregarArista(arista);
-		}
+		_aplicacion.cargarGrafo(
+			archivo.obtenerVertices(),
+			archivo.obtenerAristas()
+		);
 
 	}
 
