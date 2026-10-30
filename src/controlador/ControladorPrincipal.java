@@ -1,14 +1,14 @@
 package controlador;
 
 import modelo.Arista;
+import modelo.ConjuntoDominante;
 import modelo.GrafoJSON;
-import modelo.Orquestador;
 
 public class ControladorPrincipal {
 
-	private Orquestador _orquestador;
+	private ConjuntoDominante _orquestador;
 
-	public ControladorPrincipal(Orquestador orquestador) {
+	public ControladorPrincipal(ConjuntoDominante orquestador) {
 		_orquestador = orquestador;
 	}
 

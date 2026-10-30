@@ -9,15 +9,28 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import controlador.ControladorPrincipal;
-import modelo.Orquestador;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.ui.swing_viewer.SwingViewer;
+import org.graphstream.ui.swing_viewer.ViewPanel;
+import org.graphstream.ui.view.Viewer;
 
-public class VentanaPrincipal {
+import controlador.ControladorPrincipal;
+import modelo.Arista;
+import modelo.ConjuntoDominante;
+import modelo.ObservadorConjuntoDominante;
+
+public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private JFrame _frame;
 	private ControladorPrincipal _controlador;
+	private ConjuntoDominante _conjuntoDominante;
+	private Graph _grafo;
 
 	public static void main(String[] args) {
+		System.setProperty("org.graphstream.ui", "swing");
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -31,8 +44,13 @@ public class VentanaPrincipal {
 	}
 
 	public VentanaPrincipal() {
-		_controlador = new ControladorPrincipal(new Orquestador());
+		_conjuntoDominante = new ConjuntoDominante();
+		_controlador = new ControladorPrincipal(_conjuntoDominante);
+
 		initialize();
+
+		// registro luego de inicializar
+		_conjuntoDominante.registrar(this);
 	}
 
 	private void initialize() {
@@ -42,6 +60,8 @@ public class VentanaPrincipal {
 		JPanel panelContenido = crearPanelContenido();
 
 		panelContenido.add(crearBotonCargar());
+		panelContenido.add(crearBotonResolverGoloso());
+		panelContenido.add(crearVisualizacionGrafo());
 
 	}
 
@@ -79,4 +99,58 @@ public class VentanaPrincipal {
 		}
 	}
 
+	private JButton crearBotonResolverGoloso() {
+		JButton btnResolver = new JButton("Resolver goloso");
+		int ancho = 180;
+		int x = (_frame.getWidth() - ancho) / 2;
+		btnResolver.setBounds(x, 10, ancho, 30);
+		btnResolver.addActionListener(e -> resolverGoloso());
+		return btnResolver;
+	}
+
+	private void resolverGoloso() {
+		// _controlador.resolver();
+	}
+
+	private ViewPanel crearVisualizacionGrafo() {
+		_grafo = new SingleGraph("Grafo");
+
+		SwingViewer viewer = new SwingViewer(_grafo, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+		viewer.enableAutoLayout();
+
+		ViewPanel panelGrafo = (ViewPanel) viewer.addDefaultView(false);
+		panelGrafo.setBounds(10, 50, 988, 670);
+
+		return panelGrafo;
+	}
+
+	@Override
+	public void notificar(ConjuntoDominante conjuntoDominante) {
+		mostrarGrafo();
+	}
+
+	private void mostrarGrafo() {
+		_grafo.clear();
+		_grafo.setAttribute("ui.stylesheet",
+				"node { size: 24px; fill-color: #DDDDDD; stroke-mode: plain; stroke-color: black; text-size: 14; text-alignment: center; }");
+
+		agregarVertices();
+		agregarAristas();
+	}
+
+	private void agregarVertices() {
+		for (Integer vertice : _conjuntoDominante.obtenerVertices()) {
+			Node nodo = _grafo.addNode(String.valueOf(vertice));
+			nodo.setAttribute("ui.label", String.valueOf(vertice));
+		}
+	}
+
+	private void agregarAristas() {
+		for (Arista<Integer> arista : _conjuntoDominante.obtenerAristas()) {
+			String extremo1 = String.valueOf(arista.obtenerExtremo1());
+			String extremo2 = String.valueOf(arista.obtenerExtremo2());
+			String id = extremo1 + "-" + extremo2;
+			_grafo.addEdge(id, extremo1, extremo2);
+		}
+	}
 }
