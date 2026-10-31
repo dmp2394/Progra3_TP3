@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.graphstream.graph.Graph;
@@ -45,6 +47,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private JButton _botonStress;
 	private JButton _botonComparar;
 	private JButton _botonReset;
+	private JToggleButton _botonTema;
 	private AtomicBoolean _cancelado;
 	private SwingWorker<?, ?> _trabajoActual;
 	private String _ultimoAlgoritmo;
@@ -92,6 +95,9 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_etiquetaEstadisticas = new JLabel("Grafo: 0 vértices, 0 aristas");
 		_etiquetaEstadisticas.setBounds(10, 722, 780, 24);
 		panelContenido.add(_etiquetaEstadisticas);
+		panelContenido.add(crearBotonTema());
+
+		Tema.aplicar(_frame);
 
 	}
 
@@ -184,6 +190,15 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_botonReset.setBounds(910, 10, 85, 30);
 		_botonReset.addActionListener(e -> limpiarSolucion());
 		return _botonReset;
+	}
+
+	private JToggleButton crearBotonTema() {
+		_botonTema = Tema.crearBotonTema();
+		_botonTema.setBounds(850, 688, 164, 32);
+		_botonTema.setText("🌙 Claro");
+		_botonTema.addActionListener(e ->
+			SwingUtilities.invokeLater(this::aplicarTemaAGrafo));
+		return _botonTema;
 	}
 
 	private void limpiarSolucion() {
@@ -310,11 +325,28 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private void mostrarGrafo() {
 		_grafo.clear();
-		_grafo.setAttribute("ui.stylesheet",
-				"node { size: 24px; fill-color: #DDDDDD; stroke-mode: plain; stroke-color: black; text-size: 14; text-alignment: center; }");
+		aplicarTemaAGrafo();
 
 		agregarVertices();
 		agregarAristas();
+	}
+
+	private void aplicarTemaAGrafo() {
+		if (_grafo == null) {
+			return;
+		}
+
+		if (Tema.esOscuro()) {
+			_grafo.setAttribute("ui.stylesheet",
+				"node { size: 24px; fill-color: #3A3D42; stroke-mode: plain; stroke-color: #ECEFF1; text-size: 14; text-alignment: center; }"
+				+ "edge { fill-color: #AAB0B6; }"
+				+ "graph { fill-color: #2B2D30; }");
+		} else {
+			_grafo.setAttribute("ui.stylesheet",
+				"node { size: 24px; fill-color: #DDDDDD; stroke-mode: plain; stroke-color: black; text-size: 14; text-alignment: center; }"
+				+ "edge { fill-color: black; }"
+				+ "graph { fill-color: white; }");
+		}
 	}
 
 	// TODO: va directo al modelo. Esta mal?
@@ -365,8 +397,8 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
 		JScrollPane scroll = new JScrollPane(_areaResultados);
-		scroll.setBounds(810, 50, 204, 670);
-		contenedor.setBounds(810, 50, 204, 670);
+		scroll.setBounds(810, 50, 204, 628);
+		contenedor.setBounds(810, 50, 204, 628);
 		contenedor.add(scroll);
 		return scroll;
 	}
