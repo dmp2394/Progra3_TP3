@@ -99,6 +99,14 @@ public class Aplicacion {
 		notificarObservadoresSolucion();
 	}
 
+	public void resolverBacktracking() {
+		SolverBacktracking solverBacktracking = new SolverBacktracking(_grafo);
+
+		_solucion = solverBacktracking.resolver();
+
+		notificarObservadoresSolucion();
+	}
+
 	public Set<Integer> obtenerSolucion() {
 		return Collections.unmodifiableSet(_solucion);
 	}

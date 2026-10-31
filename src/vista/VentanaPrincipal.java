@@ -62,6 +62,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 		panelContenido.add(crearBotonCargar());
 		panelContenido.add(crearBotonResolverGoloso());
+		panelContenido.add(crearBotonResolverBacktracking());
 		panelContenido.add(crearVisualizacionGrafo());
 
 	}
@@ -111,6 +112,19 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private void resolverGoloso() {
 		_controlador.resolver();
+	}
+
+	private JButton crearBotonResolverBacktracking() {
+		JButton btnResolver = new JButton("Resolver backtracking");
+		int ancho = 180;
+		int x = (_frame.getWidth() - ancho) / 2;
+		btnResolver.setBounds(x + 190, 10, ancho, 30);
+		btnResolver.addActionListener(e -> resolverBacktracking());
+		return btnResolver;
+	}
+
+	private void resolverBacktracking() {
+		_controlador.resolverBacktracking();
 	}
 
 	private ViewPanel crearVisualizacionGrafo() {

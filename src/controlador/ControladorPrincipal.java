@@ -30,4 +30,8 @@ public class ControladorPrincipal {
 		// TODO Auto-generated method stub
 		_aplicacion.resolver();
 	}
+
+	public void resolverBacktracking() {
+		_aplicacion.resolverBacktracking();
+	}
 }

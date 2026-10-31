@@ -270,6 +270,20 @@ public class AplicacionTest {
         }
 
         @Test
+        public void resolverBacktrackingCalculaLaSolucionMinima() {
+            Aplicacion aplicacion = new Aplicacion();
+            aplicacion.agregarVertice(1);
+            aplicacion.agregarVertice(2);
+            aplicacion.agregarVertice(3);
+            aplicacion.agregarArista(new Arista<>(1, 2));
+            aplicacion.agregarArista(new Arista<>(1, 3));
+
+            aplicacion.resolverBacktracking();
+
+            assertEquals(Collections.singleton(1), aplicacion.obtenerSolucion());
+        }
+
+        @Test
         public void resolverDeNuevoDespuesDeCambiarElGrafoCalculaLaNuevaSolucion() {
             Aplicacion aplicacion = new Aplicacion();
             aplicacion.agregarVertice(1);
