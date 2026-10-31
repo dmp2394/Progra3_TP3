@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JButton;
+import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -194,7 +195,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private JToggleButton crearBotonTema() {
 		_botonTema = Tema.crearBotonTema();
-		_botonTema.setBounds(850, 688, 164, 32);
+		_botonTema.setBounds(835, 688, 164, 32);
 		_botonTema.setText("🌙 Claro");
 		_botonTema.addActionListener(e ->
 			SwingUtilities.invokeLater(this::aplicarTemaAGrafo));
@@ -397,8 +398,13 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
 		JScrollPane scroll = new JScrollPane(_areaResultados);
-		scroll.setBounds(810, 50, 204, 628);
-		contenedor.setBounds(810, 50, 204, 628);
+		scroll.setBounds(822, 50, 190, 628);
+		scroll.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createLineBorder(
+				Tema.esOscuro() ? new java.awt.Color(115, 125, 135)
+					: new java.awt.Color(150, 160, 170)),
+			BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+		contenedor.setBounds(822, 50, 190, 628);
 		contenedor.add(scroll);
 		return scroll;
 	}
