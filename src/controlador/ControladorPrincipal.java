@@ -1,7 +1,12 @@
 package controlador;
 
 import modelo.Aplicacion;
+import modelo.EjecutorStressBacktracking;
 import modelo.GrafoJSON;
+import modelo.ResultadoComparacion;
+import modelo.ResultadoStress;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ControladorPrincipal {
 
@@ -33,5 +38,20 @@ public class ControladorPrincipal {
 
 	public void resolverBacktracking() {
 		_aplicacion.resolverBacktracking();
+	}
+
+	public void limpiarSolucion() {
+		_aplicacion.borrarSolucion();
+	}
+
+	public ResultadoComparacion compararAlgoritmos() {
+		return _aplicacion.compararAlgoritmos();
+	}
+
+	public void ejecutarStress(int cantidadInstancias, int cantidadVertices,
+			AtomicBoolean cancelado,
+			EjecutorStressBacktracking.ObservadorProgreso observador) {
+		new EjecutorStressBacktracking(
+			cantidadInstancias, cantidadVertices).ejecutar(cancelado, observador);
 	}
 }

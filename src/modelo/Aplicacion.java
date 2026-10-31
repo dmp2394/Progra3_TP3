@@ -107,6 +107,25 @@ public class Aplicacion {
 		notificarObservadoresSolucion();
 	}
 
+	public ResultadoComparacion compararAlgoritmos() {
+		long inicioGoloso = System.nanoTime();
+		Set<Integer> solucionGolosa = new SolverGoloso(_grafo).resolver();
+		long tiempoGoloso = System.nanoTime() - inicioGoloso;
+
+		long inicioBacktracking = System.nanoTime();
+		Set<Integer> solucionBacktracking = new SolverBacktracking(_grafo).resolver();
+		long tiempoBacktracking = System.nanoTime() - inicioBacktracking;
+
+		_solucion = solucionBacktracking;
+		return new ResultadoComparacion(
+			solucionGolosa, solucionBacktracking, tiempoGoloso, tiempoBacktracking);
+	}
+
+	public void borrarSolucion() {
+		_solucion = new HashSet<>();
+		notificarObservadoresSolucion();
+	}
+
 	public Set<Integer> obtenerSolucion() {
 		return Collections.unmodifiableSet(_solucion);
 	}

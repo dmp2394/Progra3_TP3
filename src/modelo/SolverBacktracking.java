@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SolverBacktracking {
 
@@ -19,16 +20,28 @@ public class SolverBacktracking {
 	}
 
 	public Set<Integer> resolver() {
+		return resolver(new AtomicBoolean(false));
+	}
+
+	public Set<Integer> resolver(AtomicBoolean cancelado) {
+		if (cancelado == null) {
+			throw new IllegalArgumentException("La señal de cancelación no puede ser nula.");
+		}
+
 		List<Integer> vertices = new ArrayList<>(instancia.obtenerVertices());
 		Collections.sort(vertices);
 
 		Set<Integer> solucion = new HashSet<>();
-		buscar(vertices, 0, new ArrayList<>(), solucion);
+		buscar(vertices, 0, new ArrayList<>(), solucion, cancelado);
 		return solucion;
 	}
 
 	private boolean buscar(List<Integer> vertices, int inicio,
-			List<Integer> candidatos, Set<Integer> solucion) {
+			List<Integer> candidatos, Set<Integer> solucion, AtomicBoolean cancelado) {
+		if (cancelado.get()) {
+			return false;
+		}
+
 		if (esConjuntoDominante(candidatos)) {
 			if (solucion.isEmpty() || candidatos.size() < solucion.size()) {
 				solucion.clear();
@@ -40,10 +53,13 @@ public class SolverBacktracking {
 		boolean encontroSolucion = false;
 		for (int i = inicio; i < vertices.size(); i++) {
 			candidatos.add(vertices.get(i));
-			if (buscar(vertices, i + 1, candidatos, solucion)) {
+			if (buscar(vertices, i + 1, candidatos, solucion, cancelado)) {
 				encontroSolucion = true;
 			}
 			candidatos.remove(candidatos.size() - 1);
+			if (cancelado.get()) {
+				break;
+			}
 		}
 
 		return encontroSolucion;
