@@ -28,12 +28,18 @@ public class Aplicacion {
 
 	public void agregarVertice(Integer vertice) {
 		_grafo.agregarVertice(vertice);
+		_solucion = new HashSet<>();
 
 		notificarObservadoresNuevoGrafo();
 	}
 
 	public void agregarArista(Arista<Integer> arista) {
+		if (arista == null) {
+			throw new IllegalArgumentException("La arista no puede ser null.");
+		}
+
 		_grafo.agregarArista(arista.obtenerExtremo1(), arista.obtenerExtremo2());
+		_solucion = new HashSet<>();
 
 		notificarObservadoresNuevoGrafo();
 	}
@@ -50,6 +56,10 @@ public class Aplicacion {
 		}
 
 		for (Arista<Integer> arista : aristas) {
+			if (arista == null) {
+				throw new IllegalArgumentException("Las aristas no pueden ser null.");
+			}
+
 			grafoCargado.agregarArista(
 				arista.obtenerExtremo1(),
 				arista.obtenerExtremo2()
@@ -96,5 +106,6 @@ public class Aplicacion {
 	public void borrarGrafoActual() {
 		_grafo = new Grafo<Integer>();
 		_solucion = new HashSet<>();
+		notificarObservadoresNuevoGrafo();
 	}
 }
