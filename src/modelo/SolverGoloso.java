@@ -30,11 +30,12 @@ public class SolverGoloso {
 		int cantidadVerticesDeInstancia = instancia.obtenerVertices().size();
 
 		while (dominados.size() < cantidadVerticesDeInstancia) {
-			Integer mejorVerticeElegido = elegirVerticeCuyosVecinosAportanMasNoDominados(dominados);
+			
+			Integer mejorVerticeElegido = elegirVerticeCuyosVecinosAportanMasNoDominados(dominados, solucion);
 
 			solucion.add(mejorVerticeElegido);
 
-			// Quedan cubiertos el elegido y sus vecinos.
+			
 			dominados.add(mejorVerticeElegido);
 			dominados.addAll(instancia.obtenerVecinos(mejorVerticeElegido));
 		}
@@ -42,20 +43,17 @@ public class SolverGoloso {
 		return solucion;
 	}
 
-	private Integer elegirVerticeCuyosVecinosAportanMasNoDominados(Set<Integer> dominados) {
+	private Integer elegirVerticeCuyosVecinosAportanMasNoDominados(Set<Integer> dominados, Set<Integer> solucion) {
 		Integer mejor = null;
-		// arranca en -1 porque no hay aporte posible con -1. Podrian aportar 0 pero no
-		// -1.
+		
 		int mayorAporte = -1;
 
 		for (Integer candidato : instancia.obtenerVertices()) {
-
+			if (solucion.contains(candidato)) {
+			    continue;
+			}
+			
 			int aporteActual = aporte(candidato, dominados);
-
-			/*
-			 * Esta parte verifica si todavía no hay un candidato elegido, si el candidato
-			 * actual tiene un aporte mayor o, en caso de empate, si tiene un número menor.
-			 */
 
 			if (mejor == null || aporteActual > mayorAporte || (aporteActual == mayorAporte && candidato < mejor)) {
 
@@ -71,12 +69,12 @@ public class SolverGoloso {
 	public int aporte(Integer vertice, Set<Integer> dominados) {
 		int cantidad = 0;
 
-		// El propio vértice también cuenta si no está dominado.
+		
 		if (!dominados.contains(vertice)) {
 			cantidad++;
 		}
 
-		// Contamos únicamente los vecinos aún no dominados.
+	
 		for (Integer vecino : instancia.obtenerVecinos(vertice)) {
 			if (!dominados.contains(vecino)) {
 				cantidad++;

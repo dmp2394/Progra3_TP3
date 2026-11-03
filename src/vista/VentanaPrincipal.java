@@ -94,7 +94,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		panelContenido.add(crearVisualizacionGrafo());
 		panelContenido.add(crearPanelResultados());
 		_etiquetaEstadisticas = new JLabel("Grafo: 0 vértices, 0 aristas");
-		_etiquetaEstadisticas.setBounds(10, 722, 780, 24);
+		_etiquetaEstadisticas.setBounds(10, 655, 780, 24);
 		panelContenido.add(_etiquetaEstadisticas);
 		panelContenido.add(crearBotonTema());
 
@@ -105,7 +105,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private void configurarVentana() {
 		_frame.setTitle("Bienvenido - Conjunto Dominante Mínimo");
 		_frame.setSize(1024, 768);
-		_frame.setResizable(false);
+		_frame.setResizable(true);
 		_frame.setLocationRelativeTo(null);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -195,7 +195,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private JToggleButton crearBotonTema() {
 		_botonTema = Tema.crearBotonTema();
-		_botonTema.setBounds(835, 688, 164, 32);
+		_botonTema.setBounds(835, 620, 164, 32);
 		_botonTema.setText("🌙 Claro");
 		_botonTema.addActionListener(e ->
 			SwingUtilities.invokeLater(this::aplicarTemaAGrafo));
@@ -297,9 +297,45 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	}
 
 	private void resolverBacktracking() {
-		_ultimoAlgoritmo = "Backtracking";
-		mostrarGrafo();
-		_controlador.resolverBacktracking();
+		if (_trabajoActual != null && !_trabajoActual.isDone()) {
+	        return;
+	    }
+
+	    _ultimoAlgoritmo = "Backtracking";
+	    _cancelado = new AtomicBoolean(false);
+
+	    mostrarGrafo();
+	    _botonDetener.setEnabled(true);
+	    _areaResultados.setText("Ejecutando backtracking...");
+
+	    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+	        @Override
+	        protected Void  doInBackground() {
+	            _controlador.resolverBacktracking(_cancelado);
+	            return null;
+	        }
+
+	        @Override
+	        protected void done() {
+	            _botonDetener.setEnabled(false);
+
+	            try {
+	                get();
+
+	                if (_cancelado.get()) {
+	                    _areaResultados.setText("Backtracking cancelado.");
+	                }
+	            } catch (Exception ex) {
+	                _areaResultados.setText(
+	                    "Error en backtracking: " + ex.getMessage()
+	                );
+	            }
+	        }
+	    };
+
+	    _trabajoActual = worker;
+	    worker.execute();
 	}
 
 	private ViewPanel crearVisualizacionGrafo() {
@@ -309,7 +345,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		viewer.enableAutoLayout();
 
 		ViewPanel panelGrafo = (ViewPanel) viewer.addDefaultView(false);
-		panelGrafo.setBounds(10, 50, 790, 670);
+		panelGrafo.setBounds(10, 50, 790, 600);
 
 		return panelGrafo;
 	}
@@ -398,13 +434,13 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 
 		JScrollPane scroll = new JScrollPane(_areaResultados);
-		scroll.setBounds(822, 50, 190, 628);
+		scroll.setBounds(822, 50, 190, 565);
 		scroll.setBorder(BorderFactory.createCompoundBorder(
 			BorderFactory.createLineBorder(
 				Tema.esOscuro() ? new java.awt.Color(115, 125, 135)
 					: new java.awt.Color(150, 160, 170)),
 			BorderFactory.createEmptyBorder(4, 4, 4, 4)));
-		contenedor.setBounds(822, 50, 190, 628);
+		contenedor.setBounds(822, 50, 190, 565);
 		contenedor.add(scroll);
 		return scroll;
 	}

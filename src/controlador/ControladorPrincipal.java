@@ -4,7 +4,7 @@ import modelo.Aplicacion;
 import modelo.EjecutorStressBacktracking;
 import modelo.GrafoJSON;
 import modelo.ResultadoComparacion;
-import modelo.ResultadoStress;
+
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -32,12 +32,13 @@ public class ControladorPrincipal {
 	}
 
 	public void resolver() {
-		// TODO Auto-generated method stub
+		
 		_aplicacion.resolver();
 	}
 
-	public void resolverBacktracking() {
-		_aplicacion.resolverBacktracking();
+
+	public void resolverBacktracking(AtomicBoolean cancelado) {
+	    _aplicacion.resolverBacktracking(cancelado);
 	}
 
 	public void limpiarSolucion() {

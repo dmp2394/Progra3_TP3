@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Aplicacion {
 
@@ -100,11 +101,20 @@ public class Aplicacion {
 	}
 
 	public void resolverBacktracking() {
-		SolverBacktracking solverBacktracking = new SolverBacktracking(_grafo);
+	    resolverBacktracking(new AtomicBoolean(false));
+	}
+	
+	public void resolverBacktracking(AtomicBoolean cancelado) {
+	    SolverBacktracking solverBacktracking =
+	            new SolverBacktracking(_grafo);
 
-		_solucion = solverBacktracking.resolver();
+	    Set<Integer> resultado =
+	            solverBacktracking.resolver(cancelado);
 
-		notificarObservadoresSolucion();
+	    if (!cancelado.get()) {
+	        _solucion = resultado;
+	        notificarObservadoresSolucion();
+	    }
 	}
 
 	public ResultadoComparacion compararAlgoritmos() {

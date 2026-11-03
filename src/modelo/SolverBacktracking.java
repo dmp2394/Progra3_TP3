@@ -41,6 +41,10 @@ public class SolverBacktracking {
 		if (cancelado.get()) {
 			return false;
 		}
+		
+		 if (!solucion.isEmpty() && candidatos.size() >= solucion.size()) {
+		        return false;
+		    }
 
 		if (esConjuntoDominante(candidatos)) {
 			if (solucion.isEmpty() || candidatos.size() < solucion.size()) {
