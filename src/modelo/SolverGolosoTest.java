@@ -80,7 +80,7 @@ public class SolverGolosoTest {
 
 		grafo.agregarArista(1, 2);
 		grafo.agregarArista(3, 4);
-		// El vértice 5 queda aislado.
+		
 
 		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
@@ -102,7 +102,7 @@ public class SolverGolosoTest {
 
 		SolverGoloso solver = new SolverGoloso(grafo);
 
-		// Ya están dominados 1 y 2: solo queda por cubrir 3.
+		
 		assertEquals(1, solver.aporte(1, conjunto(1, 2)));
 	}
 
@@ -137,13 +137,12 @@ public class SolverGolosoTest {
 
 	private void verificarDominacion(Grafo<Integer> grafo, Set<Integer> solucion) {
 
-		// Comprueba que todos los elegidos pertenezcan al grafo.
+		
 		for (Integer elegido : solucion) {
 			assertTrue("La solución contiene un vértice ajeno al grafo.", grafo.existeVertice(elegido));
 		}
 
-		// Comprueba que cada vértice esté elegido
-		// o tenga un vecino elegido.
+	
 		for (Integer vertice : grafo.obtenerVertices()) {
 			boolean cubierto = solucion.contains(vertice);
 
