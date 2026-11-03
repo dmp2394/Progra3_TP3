@@ -55,7 +55,10 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private String _ultimoAlgoritmo;
 	private Timer _timerResolviendo;
 	private int _cantidadPuntos;
-
+	private String _resolviendoTextoBase = "Resolviendo";
+	private String _resolviendoTextoComparacion = "Comparando";
+	private int _intervaloResolviendo = 421;
+	
 	public static void main(String[] args) {
 		System.setProperty("org.graphstream.ui", "swing");
 
@@ -220,30 +223,45 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		if (_trabajoActual != null && !_trabajoActual.isDone()) {
 			return;
 		}
-
+		_cancelado = new AtomicBoolean(false);
 		_botonComparar.setEnabled(false);
 		mostrarGrafo();
-		_areaResultados.setText("Ejecutando Goloso y Backtracking...");
+		_botonDetener.setEnabled(true);
+		iniciarAnimacionResolviendo(_resolviendoTextoComparacion);
+		
 		SwingWorker<ResultadoComparacion, Void> worker =
 			new SwingWorker<ResultadoComparacion, Void>() {
 				@Override
 				protected ResultadoComparacion doInBackground() {
-					return _controlador.compararAlgoritmos();
+					return _controlador.compararAlgoritmos(_cancelado);
 				}
 
 				@Override
 				protected void done() {
+					detenerAnimacionResolviendo();
 					_botonComparar.setEnabled(true);
+					 _botonDetener.setEnabled(false);
 					try {
 						ResultadoComparacion resultado = get();
+						if (_cancelado.get()) {
+		                    _areaResultados.setText("Cancelado.");
+		                    _etiquetaEstadisticas.setText("Comparación cancelada");
+		                    return;
+		                }
 						pintarSolucionSobreGrafo(resultado.obtenerSolucionBacktracking());
 						_etiquetaEstadisticas.setText(resultado.obtenerResumen());
 						mostrarComparacion(resultado);
 					} catch (Exception ex) {
-						_etiquetaEstadisticas.setText("Error al comparar: " + ex.getMessage());
+						if (_cancelado.get()) {
+		                    _areaResultados.setText("Comparación cancelada.");
+		                }
+						else {
+		                    _etiquetaEstadisticas.setText("Error al comparar: " + ex.getMessage());
+						}
 					}
 				}
 			};
+			
 		_trabajoActual = worker;
 		worker.execute();
 	}
@@ -259,27 +277,20 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_botonStress.setText("Ejecutando...");
 		_areaResultados.setText("Stress iniciado\n20 instancias - 8 vértices\n");
 		_etiquetaEstadisticas.setText("Stress iniciado: 20 instancias, 8 vértices");
+		
 		SwingWorker<Void, ResultadoStress> worker =
 			new SwingWorker<Void, ResultadoStress>() {
 				@Override
-				protected Void doInBackground() {
-					_controlador.ejecutarStress(
-						20,
-						8,
-						_cancelado,
-						resultado -> publish(resultado));
+				protected Void doInBackground() {_controlador.ejecutarStress(20,8,_cancelado,resultado -> publish(resultado));
 					return null;
 				}
 
 				@Override
 				protected void process(List<ResultadoStress> resultados) {
 					if (!resultados.isEmpty()) {
-						_etiquetaEstadisticas.setText(
-							resultados.get(resultados.size() - 1).obtenerResumen());
-						ResultadoStress ultimo =
-							resultados.get(resultados.size() - 1);
-						_areaResultados.append(
-							ultimo.obtenerResumen() + "\n");
+						_etiquetaEstadisticas.setText(resultados.get(resultados.size() - 1).obtenerResumen());
+						ResultadoStress ultimo =resultados.get(resultados.size() - 1);
+						_areaResultados.append(ultimo.obtenerResumen() + "\n");
 					}
 				}
 
@@ -309,7 +320,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	    mostrarGrafo();
 	    _botonDetener.setEnabled(true);
 	    
-	    iniciarAnimacionResolviendo();
+	    iniciarAnimacionResolviendo(_resolviendoTextoBase);
 
 	    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -342,14 +353,14 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	    worker.execute();
 	}
 	
-	private void iniciarAnimacionResolviendo() {
+	private void iniciarAnimacionResolviendo(String texto) {
 	    _cantidadPuntos = 0;
 
-	    _timerResolviendo = new Timer(400, evento -> {
+	    _timerResolviendo = new Timer(_intervaloResolviendo, evento -> {
 	        _cantidadPuntos = (_cantidadPuntos + 1) % 4;
 
 	        String puntos = ".".repeat(_cantidadPuntos);
-	        _areaResultados.setText("Resolviendo" + puntos);
+	        _areaResultados.setText( texto + puntos);
 	    });
 
 	    _timerResolviendo.start();

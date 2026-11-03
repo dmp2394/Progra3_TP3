@@ -45,14 +45,18 @@ public class ControladorPrincipal {
 		_aplicacion.borrarSolucion();
 	}
 
+	public ResultadoComparacion compararAlgoritmos(AtomicBoolean cancelado) {
+
+	    return _aplicacion.compararAlgoritmos(cancelado);
+	}
+	
 	public ResultadoComparacion compararAlgoritmos() {
 		return _aplicacion.compararAlgoritmos();
 	}
 
-	public void ejecutarStress(int cantidadInstancias, int cantidadVertices,
-			AtomicBoolean cancelado,
+	public void ejecutarStress(int cantidadInstancias, int cantidadVertices,AtomicBoolean cancelado,
 			EjecutorStressBacktracking.ObservadorProgreso observador) {
-		new EjecutorStressBacktracking(
-			cantidadInstancias, cantidadVertices).ejecutar(cancelado, observador);
+		
+		new EjecutorStressBacktracking(cantidadInstancias, cantidadVertices).ejecutar(cancelado, observador);
 	}
 }

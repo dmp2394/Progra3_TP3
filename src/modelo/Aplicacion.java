@@ -105,11 +105,9 @@ public class Aplicacion {
 	}
 	
 	public void resolverBacktracking(AtomicBoolean cancelado) {
-	    SolverBacktracking solverBacktracking =
-	            new SolverBacktracking(_grafo);
+	    SolverBacktracking solverBacktracking =new SolverBacktracking(_grafo);
 
-	    Set<Integer> resultado =
-	            solverBacktracking.resolver(cancelado);
+	    Set<Integer> resultado =solverBacktracking.resolver(cancelado);
 
 	    if (!cancelado.get()) {
 	        _solucion = resultado;
@@ -118,17 +116,30 @@ public class Aplicacion {
 	}
 
 	public ResultadoComparacion compararAlgoritmos() {
-		long inicioGoloso = System.nanoTime();
-		Set<Integer> solucionGolosa = new SolverGoloso(_grafo).resolver();
-		long tiempoGoloso = System.nanoTime() - inicioGoloso;
+	    return compararAlgoritmos(new AtomicBoolean(false));
+	}
 
-		long inicioBacktracking = System.nanoTime();
-		Set<Integer> solucionBacktracking = new SolverBacktracking(_grafo).resolver();
-		long tiempoBacktracking = System.nanoTime() - inicioBacktracking;
+	public ResultadoComparacion compararAlgoritmos(AtomicBoolean cancelado) {
 
-		_solucion = solucionBacktracking;
-		return new ResultadoComparacion(
-			solucionGolosa, solucionBacktracking, tiempoGoloso, tiempoBacktracking);
+	    long inicioGoloso = System.nanoTime();
+	    Set<Integer> solucionGolosa = new SolverGoloso(_grafo).resolver();
+	    long tiempoGoloso = System.nanoTime() - inicioGoloso;
+	   
+	    if (cancelado.get()) {
+	        return null;
+	    }
+
+	    long inicioBacktracking = System.nanoTime();
+	    Set<Integer> solucionBacktracking = new SolverBacktracking(_grafo).resolver(cancelado);
+	    long tiempoBacktracking = System.nanoTime() - inicioBacktracking;
+	    
+	    if (cancelado.get()) {
+	        return null;
+	    }
+
+	    _solucion = solucionBacktracking;
+
+	    return new ResultadoComparacion(solucionGolosa, solucionBacktracking, tiempoGoloso, tiempoBacktracking );
 	}
 
 	public void borrarSolucion() {
