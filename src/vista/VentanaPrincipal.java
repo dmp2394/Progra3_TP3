@@ -21,6 +21,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.Timer;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -52,6 +53,8 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private AtomicBoolean _cancelado;
 	private SwingWorker<?, ?> _trabajoActual;
 	private String _ultimoAlgoritmo;
+	private Timer _timerResolviendo;
+	private int _cantidadPuntos;
 
 	public static void main(String[] args) {
 		System.setProperty("org.graphstream.ui", "swing");
@@ -74,7 +77,6 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 		initialize();
 
-		// registro luego de inicializar
 		_aplicacion.registrar(this);
 	}
 
@@ -306,7 +308,8 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	    mostrarGrafo();
 	    _botonDetener.setEnabled(true);
-	    _areaResultados.setText("Ejecutando backtracking...");
+	    
+	    iniciarAnimacionResolviendo();
 
 	    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -318,6 +321,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	        @Override
 	        protected void done() {
+	        	detenerAnimacionResolviendo();
 	            _botonDetener.setEnabled(false);
 
 	            try {
@@ -336,6 +340,26 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	    _trabajoActual = worker;
 	    worker.execute();
+	}
+	
+	private void iniciarAnimacionResolviendo() {
+	    _cantidadPuntos = 0;
+
+	    _timerResolviendo = new Timer(400, evento -> {
+	        _cantidadPuntos = (_cantidadPuntos + 1) % 4;
+
+	        String puntos = ".".repeat(_cantidadPuntos);
+	        _areaResultados.setText("Resolviendo" + puntos);
+	    });
+
+	    _timerResolviendo.start();
+	}
+
+	private void detenerAnimacionResolviendo() {
+	    if (_timerResolviendo != null) {
+	        _timerResolviendo.stop();
+	        _timerResolviendo = null;
+	    }
 	}
 
 	private ViewPanel crearVisualizacionGrafo() {
