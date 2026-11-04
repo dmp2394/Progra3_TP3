@@ -43,24 +43,16 @@ public class SolverBacktracking {
 	}
 
 	private void buscar(int inicio) {
-
-		// si el usuario cancela salgo
-		if (_cancelado.get()) {
+		if (fueCanceladoPorUsuario()) {
 			return;
 		}
 
-		// poda: si mis candidatos son mas que la solucion, no avanzo por ahi
-		if (!_solucion.isEmpty() && _candidatos.size() >= _solucion.size()) {
+		if (noMejoraLaSolucion()) {
 			return;
 		}
 
-		// si candidatos es dominante y mejor que solucion los guardo en solucion y
-		// salgo
 		if (esConjuntoDominante(_candidatos)) {
-			if (_solucion.isEmpty() || _candidatos.size() < _solucion.size()) {
-				_solucion.clear();
-				_solucion.addAll(_candidatos);
-			}
+			guardarSiEsMejorSolucion();
 			return;
 		}
 
@@ -68,10 +60,21 @@ public class SolverBacktracking {
 			_candidatos.add(_vertices.get(i));
 			buscar(i + 1);
 			_candidatos.remove(_candidatos.size() - 1);
+		}
+	}
 
-			if (_cancelado.get()) {
-				break;
-			}
+	private boolean fueCanceladoPorUsuario() {
+		return _cancelado.get();
+	}
+
+	private boolean noMejoraLaSolucion() {
+		return !_solucion.isEmpty() && _candidatos.size() >= _solucion.size();
+	}
+
+	private void guardarSiEsMejorSolucion() {
+		if (_solucion.isEmpty() || _candidatos.size() < _solucion.size()) {
+			_solucion.clear();
+			_solucion.addAll(_candidatos);
 		}
 	}
 
