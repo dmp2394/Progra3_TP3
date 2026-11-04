@@ -12,11 +12,13 @@ public class Aplicacion {
 	private Grafo<Integer> _grafo;
 	private ArrayList<ObservadorConjuntoDominante> _observadores;
 	private Set<Integer> _solucion;
+	private AtomicBoolean _cancelado;
 
 	public Aplicacion() {
 		_grafo = new Grafo<Integer>();
 		_observadores = new ArrayList<>();
 		_solucion = new HashSet<>();
+		_cancelado = new AtomicBoolean(false);
 	}
 
 	public void registrar(ObservadorConjuntoDominante observador) {
@@ -61,10 +63,7 @@ public class Aplicacion {
 				throw new IllegalArgumentException("Las aristas no pueden ser null.");
 			}
 
-			grafoCargado.agregarArista(
-				arista.obtenerExtremo1(),
-				arista.obtenerExtremo2()
-			);
+			grafoCargado.agregarArista(arista.obtenerExtremo1(), arista.obtenerExtremo2());
 		}
 
 		_grafo = grafoCargado;
@@ -101,45 +100,45 @@ public class Aplicacion {
 	}
 
 	public void resolverBacktracking() {
-	    resolverBacktracking(new AtomicBoolean(false));
+		resolverBacktracking(new AtomicBoolean(false));
 	}
-	
+
 	public void resolverBacktracking(AtomicBoolean cancelado) {
-	    SolverBacktracking solverBacktracking =new SolverBacktracking(_grafo);
+		SolverBacktracking solverBacktracking = new SolverBacktracking(_grafo);
 
-	    Set<Integer> resultado =solverBacktracking.resolver(cancelado);
+		Set<Integer> resultado = solverBacktracking.resolver(cancelado);
 
-	    if (!cancelado.get()) {
-	        _solucion = resultado;
-	        notificarObservadoresSolucion();
-	    }
+		if (!cancelado.get()) {
+			_solucion = resultado;
+			notificarObservadoresSolucion();
+		}
 	}
 
 	public ResultadoComparacion compararAlgoritmos() {
-	    return compararAlgoritmos(new AtomicBoolean(false));
+		return compararAlgoritmos(new AtomicBoolean(false));
 	}
 
 	public ResultadoComparacion compararAlgoritmos(AtomicBoolean cancelado) {
 
-	    long inicioGoloso = System.nanoTime();
-	    Set<Integer> solucionGolosa = new SolverGoloso(_grafo).resolver();
-	    long tiempoGoloso = System.nanoTime() - inicioGoloso;
-	   
-	    if (cancelado.get()) {
-	        return null;
-	    }
+		long inicioGoloso = System.nanoTime();
+		Set<Integer> solucionGolosa = new SolverGoloso(_grafo).resolver();
+		long tiempoGoloso = System.nanoTime() - inicioGoloso;
 
-	    long inicioBacktracking = System.nanoTime();
-	    Set<Integer> solucionBacktracking = new SolverBacktracking(_grafo).resolver(cancelado);
-	    long tiempoBacktracking = System.nanoTime() - inicioBacktracking;
-	    
-	    if (cancelado.get()) {
-	        return null;
-	    }
+		if (cancelado.get()) {
+			return null;
+		}
 
-	    _solucion = solucionBacktracking;
+		long inicioBacktracking = System.nanoTime();
+		Set<Integer> solucionBacktracking = new SolverBacktracking(_grafo).resolver(cancelado);
+		long tiempoBacktracking = System.nanoTime() - inicioBacktracking;
 
-	    return new ResultadoComparacion(solucionGolosa, solucionBacktracking, tiempoGoloso, tiempoBacktracking );
+		if (cancelado.get()) {
+			return null;
+		}
+
+		_solucion = solucionBacktracking;
+
+		return new ResultadoComparacion(solucionGolosa, solucionBacktracking, tiempoGoloso, tiempoBacktracking);
 	}
 
 	public void borrarSolucion() {
@@ -155,5 +154,13 @@ public class Aplicacion {
 		_grafo = new Grafo<Integer>();
 		_solucion = new HashSet<>();
 		notificarObservadoresNuevoGrafo();
+	}
+
+	public void detenerEjecucion() {
+		_cancelado.set(true);
+	}
+
+	public Boolean fueCancelado() {
+		return _cancelado.get();
 	}
 }

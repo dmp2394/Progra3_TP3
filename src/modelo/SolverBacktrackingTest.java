@@ -12,25 +12,35 @@ public class SolverBacktrackingTest {
 
 	@Test
 	public void grafoVacioDevuelveConjuntoVacio() {
-		Grafo<Integer> grafo = new Grafo<>();
-
-		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
+		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.vacio()).resolver();
 
 		assertTrue(resultado.isEmpty());
 	}
 
 	@Test
-	public void grafoEstrellaEncuentraElCentroComoMinimo() {
-		Grafo<Integer> grafo = crearGrafoEstrella();
+	public void unSoloVerticeDebeSerElegido() {
+		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.unSoloVertice()).resolver();
 
-		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
+		assertEquals(conjunto(1), resultado);
+	}
+
+	@Test
+	public void verticesAisladosDebenSerElegidosTodos() {
+		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.verticesAislados()).resolver();
+
+		assertEquals(conjunto(1, 2, 3), resultado);
+	}
+
+	@Test
+	public void grafoEstrellaEncuentraElCentroComoMinimo() {
+		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.estrella()).resolver();
 
 		assertEquals(conjunto(1), resultado);
 	}
 
 	@Test
 	public void encuentraConjuntoDominanteMinimo() {
-		Grafo<Integer> grafo = crearGrafoCamino();
+		Grafo<Integer> grafo = GrafosDePrueba.camino();
 
 		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
 
@@ -38,31 +48,30 @@ public class SolverBacktrackingTest {
 		verificarDominacion(grafo, resultado);
 	}
 
+	@Test
+	public void grafoEjemplo1EncuentraUnMinimoDeTresVertices() {
+		Grafo<Integer> grafo = GrafosDePrueba.ejemplo1();
+
+		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
+
+		assertEquals(3, resultado.size());
+		verificarDominacion(grafo, resultado);
+	}
+
+	@Test
+	public void grafoDesconectadoCubreTodasLasComponentes() {
+		Grafo<Integer> grafo = GrafosDePrueba.desconectado();
+
+		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
+
+		assertEquals(3, resultado.size());
+		assertTrue(resultado.contains(5));
+		verificarDominacion(grafo, resultado);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void rechazaGrafoNulo() {
 		new SolverBacktracking(null);
-	}
-
-	private Grafo<Integer> crearGrafoEstrella() {
-		Grafo<Integer> grafo = new Grafo<>();
-		for (int i = 1; i <= 5; i++) {
-			grafo.agregarVertice(i);
-		}
-		for (int i = 2; i <= 5; i++) {
-			grafo.agregarArista(1, i);
-		}
-		return grafo;
-	}
-
-	private Grafo<Integer> crearGrafoCamino() {
-		Grafo<Integer> grafo = new Grafo<>();
-		for (int i = 1; i <= 5; i++) {
-			grafo.agregarVertice(i);
-		}
-		for (int i = 1; i < 5; i++) {
-			grafo.agregarArista(i, i + 1);
-		}
-		return grafo;
 	}
 
 	private Set<Integer> conjunto(Integer... vertices) {
@@ -75,8 +84,7 @@ public class SolverBacktrackingTest {
 
 	private void verificarDominacion(Grafo<Integer> grafo, Set<Integer> solucion) {
 		for (Integer vertice : grafo.obtenerVertices()) {
-			if (!solucion.contains(vertice)
-					&& !intersecta(solucion, grafo.obtenerVecinos(vertice))) {
+			if (!solucion.contains(vertice) && !intersecta(solucion, grafo.obtenerVecinos(vertice))) {
 				assertTrue("El vértice " + vertice + " no quedó dominado.", false);
 			}
 		}

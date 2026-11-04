@@ -7,21 +7,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.JButton;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingWorker;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -50,7 +49,6 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private JButton _botonComparar;
 	private JButton _botonReset;
 	private JToggleButton _botonTema;
-	private AtomicBoolean _cancelado;
 	private SwingWorker<?, ?> _trabajoActual;
 	private String _ultimoAlgoritmo;
 	private Timer _timerResolviendo;
@@ -58,7 +56,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private String _resolviendoTextoBase = "Resolviendo";
 	private String _resolviendoTextoComparacion = "Comparando";
 	private int _intervaloResolviendo = 421;
-	
+
 	public static void main(String[] args) {
 		System.setProperty("org.graphstream.ui", "swing");
 
@@ -183,12 +181,13 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_botonDetener = new JButton("Detener");
 		_botonDetener.setBounds(815, 10, 90, 30);
 		_botonDetener.setEnabled(false);
-		_botonDetener.addActionListener(e -> {
-			if (_cancelado != null) {
-				_cancelado.set(true);
-			}
-		});
+		_botonDetener.addActionListener(e -> detenerEjecucion());
 		return _botonDetener;
+	}
+
+	private void detenerEjecucion() {
+		_controlador.detenerEjecucion();
+
 	}
 
 	private JButton crearBotonReset() {
@@ -202,8 +201,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_botonTema = Tema.crearBotonTema();
 		_botonTema.setBounds(835, 620, 164, 32);
 		_botonTema.setText("🌙 Claro");
-		_botonTema.addActionListener(e ->
-			SwingUtilities.invokeLater(this::aplicarTemaAGrafo));
+		_botonTema.addActionListener(e -> SwingUtilities.invokeLater(this::aplicarTemaAGrafo));
 		return _botonTema;
 	}
 
@@ -213,55 +211,51 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		}
 		_controlador.limpiarSolucion();
 		mostrarGrafo();
-		_etiquetaEstadisticas.setText(
-			String.format("Grafo: %d vértices, %d aristas - solución limpiada",
-				_aplicacion.obtenerVertices().size(),
-				_aplicacion.obtenerAristas().size()));
+		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas - solución limpiada",
+				// MMMMMM RARIII...
+				_aplicacion.obtenerVertices().size(), _aplicacion.obtenerAristas().size()));
 	}
 
 	private void compararAlgoritmos() {
 		if (_trabajoActual != null && !_trabajoActual.isDone()) {
 			return;
 		}
-		_cancelado = new AtomicBoolean(false);
 		_botonComparar.setEnabled(false);
 		mostrarGrafo();
 		_botonDetener.setEnabled(true);
 		iniciarAnimacionResolviendo(_resolviendoTextoComparacion);
-		
-		SwingWorker<ResultadoComparacion, Void> worker =
-			new SwingWorker<ResultadoComparacion, Void>() {
-				@Override
-				protected ResultadoComparacion doInBackground() {
-					return _controlador.compararAlgoritmos(_cancelado);
-				}
 
-				@Override
-				protected void done() {
-					detenerAnimacionResolviendo();
-					_botonComparar.setEnabled(true);
-					 _botonDetener.setEnabled(false);
-					try {
-						ResultadoComparacion resultado = get();
-						if (_cancelado.get()) {
-		                    _areaResultados.setText("Cancelado.");
-		                    _etiquetaEstadisticas.setText("Comparación cancelada");
-		                    return;
-		                }
-						pintarSolucionSobreGrafo(resultado.obtenerSolucionBacktracking());
-						_etiquetaEstadisticas.setText(resultado.obtenerResumen());
-						mostrarComparacion(resultado);
-					} catch (Exception ex) {
-						if (_cancelado.get()) {
-		                    _areaResultados.setText("Comparación cancelada.");
-		                }
-						else {
-		                    _etiquetaEstadisticas.setText("Error al comparar: " + ex.getMessage());
-						}
+		SwingWorker<ResultadoComparacion, Void> worker = new SwingWorker<ResultadoComparacion, Void>() {
+			@Override
+			protected ResultadoComparacion doInBackground() {
+				return _controlador.compararAlgoritmos();
+			}
+
+			@Override
+			protected void done() {
+				detenerAnimacionResolviendo();
+				_botonComparar.setEnabled(true);
+				_botonDetener.setEnabled(false);
+				try {
+					ResultadoComparacion resultado = get();
+					if (_controlador.fueCancelado()) {
+						_areaResultados.setText("Cancelado.");
+						_etiquetaEstadisticas.setText("Comparación cancelada");
+						return;
+					}
+					pintarSolucionSobreGrafo(resultado.obtenerSolucionBacktracking());
+					_etiquetaEstadisticas.setText(resultado.obtenerResumen());
+					mostrarComparacion(resultado);
+				} catch (Exception ex) {
+					if (_controlador.fueCancelado()) {
+						_areaResultados.setText("Comparación cancelada.");
+					} else {
+						_etiquetaEstadisticas.setText("Error al comparar: " + ex.getMessage());
 					}
 				}
-			};
-			
+			}
+		};
+
 		_trabajoActual = worker;
 		worker.execute();
 	}
@@ -271,106 +265,102 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 			return;
 		}
 
-		_cancelado = new AtomicBoolean(false);
 		_botonStress.setEnabled(false);
 		_botonDetener.setEnabled(true);
 		_botonStress.setText("Ejecutando...");
 		_areaResultados.setText("Stress iniciado\n20 instancias - 8 vértices\n");
 		_etiquetaEstadisticas.setText("Stress iniciado: 20 instancias, 8 vértices");
-		
-		SwingWorker<Void, ResultadoStress> worker =
-			new SwingWorker<Void, ResultadoStress>() {
-				@Override
-				protected Void doInBackground() {_controlador.ejecutarStress(20,8,_cancelado,resultado -> publish(resultado));
-					return null;
-				}
 
-				@Override
-				protected void process(List<ResultadoStress> resultados) {
-					if (!resultados.isEmpty()) {
-						_etiquetaEstadisticas.setText(resultados.get(resultados.size() - 1).obtenerResumen());
-						ResultadoStress ultimo =resultados.get(resultados.size() - 1);
-						_areaResultados.append(ultimo.obtenerResumen() + "\n");
-					}
-				}
+		SwingWorker<Void, ResultadoStress> worker = new SwingWorker<Void, ResultadoStress>() {
+			@Override
+			protected Void doInBackground() {
+				// arreglar esto
+				// _controlador.ejecutarStress(20, 8, resultado -> publish(resultado));
+				return null;
+			}
 
-				@Override
-				protected void done() {
-					_botonStress.setEnabled(true);
-					_botonDetener.setEnabled(false);
-					_botonStress.setText("Stress");
-					if (_cancelado.get() && _etiquetaEstadisticas.getText().indexOf("cancelado") < 0) {
-						_etiquetaEstadisticas.setText(
-							_etiquetaEstadisticas.getText() + " - cancelado");
-					}
+			@Override
+			protected void process(List<ResultadoStress> resultados) {
+				if (!resultados.isEmpty()) {
+					_etiquetaEstadisticas.setText(resultados.get(resultados.size() - 1).obtenerResumen());
+					ResultadoStress ultimo = resultados.get(resultados.size() - 1);
+					_areaResultados.append(ultimo.obtenerResumen() + "\n");
 				}
-			};
+			}
+
+			@Override
+			protected void done() {
+				_botonStress.setEnabled(true);
+				_botonDetener.setEnabled(false);
+				_botonStress.setText("Stress");
+				if (_controlador.fueCancelado() && _etiquetaEstadisticas.getText().indexOf("cancelado") < 0) {
+					_etiquetaEstadisticas.setText(_etiquetaEstadisticas.getText() + " - cancelado");
+				}
+			}
+		};
 		_trabajoActual = worker;
 		worker.execute();
 	}
 
 	private void resolverBacktracking() {
 		if (_trabajoActual != null && !_trabajoActual.isDone()) {
-	        return;
-	    }
+			return;
+		}
 
-	    _ultimoAlgoritmo = "Backtracking";
-	    _cancelado = new AtomicBoolean(false);
+		_ultimoAlgoritmo = "Backtracking";
 
-	    mostrarGrafo();
-	    _botonDetener.setEnabled(true);
-	    
-	    iniciarAnimacionResolviendo(_resolviendoTextoBase);
+		mostrarGrafo();
+		_botonDetener.setEnabled(true);
 
-	    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+		iniciarAnimacionResolviendo(_resolviendoTextoBase);
 
-	        @Override
-	        protected Void  doInBackground() {
-	            _controlador.resolverBacktracking(_cancelado);
-	            return null;
-	        }
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
-	        @Override
-	        protected void done() {
-	        	detenerAnimacionResolviendo();
-	            _botonDetener.setEnabled(false);
+			@Override
+			protected Void doInBackground() {
+				_controlador.resolverBacktracking();
+				return null;
+			}
 
-	            try {
-	                get();
+			@Override
+			protected void done() {
+				detenerAnimacionResolviendo();
+				_botonDetener.setEnabled(false);
 
-	                if (_cancelado.get()) {
-	                    _areaResultados.setText("Backtracking cancelado.");
-	                }
-	            } catch (Exception ex) {
-	                _areaResultados.setText(
-	                    "Error en backtracking: " + ex.getMessage()
-	                );
-	            }
-	        }
-	    };
+				try {
+					get();
 
-	    _trabajoActual = worker;
-	    worker.execute();
+					if (_controlador.fueCancelado()) {
+						_areaResultados.setText("Backtracking cancelado.");
+					}
+				} catch (Exception ex) {
+					_areaResultados.setText("Error en backtracking: " + ex.getMessage());
+				}
+			}
+		};
+
+		_trabajoActual = worker;
+		worker.execute();
 	}
-	
+
 	private void iniciarAnimacionResolviendo(String texto) {
-	    _cantidadPuntos = 0;
+		_cantidadPuntos = 0;
 
-	    _timerResolviendo = new Timer(_intervaloResolviendo, evento -> {
-	        _cantidadPuntos = (_cantidadPuntos + 1) % 4;
+		_timerResolviendo = new Timer(_intervaloResolviendo, evento -> {
+			_cantidadPuntos = (_cantidadPuntos + 1) % 4;
 
-	        String puntos = ".".repeat(_cantidadPuntos);
-	        _areaResultados.setText( texto + puntos);
-	    });
+			String puntos = ".".repeat(_cantidadPuntos);
+			_areaResultados.setText(texto + puntos);
+		});
 
-	    _timerResolviendo.start();
+		_timerResolviendo.start();
 	}
 
 	private void detenerAnimacionResolviendo() {
-	    if (_timerResolviendo != null) {
-	        _timerResolviendo.stop();
-	        _timerResolviendo = null;
-	    }
+		if (_timerResolviendo != null) {
+			_timerResolviendo.stop();
+			_timerResolviendo = null;
+		}
 	}
 
 	private ViewPanel crearVisualizacionGrafo() {
@@ -389,10 +379,8 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	@Override
 	public void notificarNuevoGrafo(Aplicacion aplicacion) {
 		mostrarGrafo();
-		_etiquetaEstadisticas.setText(
-			String.format("Grafo: %d vértices, %d aristas",
-				aplicacion.obtenerVertices().size(),
-				aplicacion.obtenerAristas().size()));
+		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas",
+				aplicacion.obtenerVertices().size(), aplicacion.obtenerAristas().size()));
 	}
 
 	private void mostrarGrafo() {
@@ -410,17 +398,16 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 		if (Tema.esOscuro()) {
 			_grafo.setAttribute("ui.stylesheet",
-				"node { size: 24px; fill-color: #3A3D42; stroke-mode: plain; stroke-color: #ECEFF1; text-size: 14; text-alignment: center; }"
-				+ "edge { fill-color: #AAB0B6; }"
-				+ "graph { fill-color: #2B2D30; }");
+					"node { size: 24px; fill-color: #3A3D42; stroke-mode: plain; stroke-color: #ECEFF1; text-size: 14; text-alignment: center; }"
+							+ "edge { fill-color: #AAB0B6; }" + "graph { fill-color: #2B2D30; }");
 		} else {
 			_grafo.setAttribute("ui.stylesheet",
-				"node { size: 24px; fill-color: #DDDDDD; stroke-mode: plain; stroke-color: black; text-size: 14; text-alignment: center; }"
-				+ "edge { fill-color: black; }"
-				+ "graph { fill-color: white; }");
+					"node { size: 24px; fill-color: #DDDDDD; stroke-mode: plain; stroke-color: black; text-size: 14; text-alignment: center; }"
+							+ "edge { fill-color: black; }" + "graph { fill-color: white; }");
 		}
 	}
 
+	// MMMMMMM RARIII
 	// TODO: va directo al modelo. Esta mal?
 	private void agregarVertices() {
 		for (Integer vertice : _aplicacion.obtenerVertices()) {
@@ -442,9 +429,8 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	@Override
 	public void notificarSolucion(Aplicacion aplicacion) {
 		mostrarSolucionSobreGrafo(aplicacion);
-		mostrarSolucionIndividual(
-			_ultimoAlgoritmo == null ? "Algoritmo" : _ultimoAlgoritmo,
-			aplicacion.obtenerSolucion());
+		mostrarSolucionIndividual(_ultimoAlgoritmo == null ? "Algoritmo" : _ultimoAlgoritmo,
+				aplicacion.obtenerSolucion());
 	}
 
 	private void mostrarSolucionSobreGrafo(Aplicacion aplicacion) {
@@ -461,8 +447,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private JScrollPane crearPanelResultados() {
 		JPanel contenedor = new JPanel(null);
-		_areaResultados = new JTextArea(
-			"Resultados\n\nSeleccione un algoritmo o Stress.");
+		_areaResultados = new JTextArea("Resultados\n\nSeleccione un algoritmo o Stress.");
 		_areaResultados.setEditable(false);
 		_areaResultados.setLineWrap(true);
 		_areaResultados.setWrapStyleWord(true);
@@ -471,35 +456,29 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		JScrollPane scroll = new JScrollPane(_areaResultados);
 		scroll.setBounds(822, 50, 190, 565);
 		scroll.setBorder(BorderFactory.createCompoundBorder(
-			BorderFactory.createLineBorder(
-				Tema.esOscuro() ? new java.awt.Color(115, 125, 135)
-					: new java.awt.Color(150, 160, 170)),
-			BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+				BorderFactory.createLineBorder(
+						Tema.esOscuro() ? new java.awt.Color(115, 125, 135) : new java.awt.Color(150, 160, 170)),
+				BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 		contenedor.setBounds(822, 50, 190, 565);
 		contenedor.add(scroll);
 		return scroll;
 	}
 
 	private void mostrarSolucionIndividual(String algoritmo, Set<Integer> solucion) {
-		_areaResultados.setText(
-			algoritmo + "\n"
-			+ "Tamaño: " + solucion.size() + "\n"
-			+ "Vértices: " + formatearVertices(solucion) + "\n");
-		_etiquetaEstadisticas.setText(
-			algoritmo + ": " + solucion.size() + " vértices dominantes");
+		_areaResultados.setText(algoritmo + "\n" + "Tamaño: " + solucion.size() + "\n" + "Vértices: "
+				+ formatearVertices(solucion) + "\n");
+		_etiquetaEstadisticas.setText(algoritmo + ": " + solucion.size() + " vértices dominantes");
 	}
 
 	private void mostrarComparacion(ResultadoComparacion resultado) {
 		StringBuilder texto = new StringBuilder();
-		texto.append("COMPARACIÓN\n\n")
-			.append("Goloso\n")
-			.append("Tamaño: ").append(resultado.obtenerTamanioGrafoGoloso()).append("\n")
-			.append("Vértices: ").append(formatearVertices(resultado.obtenerSolucionGolosa()))
-			.append("\nTiempo: ").append(formatearTiempo(resultado.obtenerTiempoGolosoNano()))
-			.append("\n\nBacktracking\n")
-			.append("Tamaño: ").append(resultado.obtenerTamanioGrafoBacktracking()).append("\n")
-			.append("Vértices: ").append(formatearVertices(resultado.obtenerSolucionBacktracking()))
-			.append("\nTiempo: ").append(formatearTiempo(resultado.obtenerTiempoBacktrackingNano()));
+		texto.append("COMPARACIÓN\n\n").append("Goloso\n").append("Tamaño: ")
+				.append(resultado.obtenerTamanioGrafoGoloso()).append("\n").append("Vértices: ")
+				.append(formatearVertices(resultado.obtenerSolucionGolosa())).append("\nTiempo: ")
+				.append(formatearTiempo(resultado.obtenerTiempoGolosoNano())).append("\n\nBacktracking\n")
+				.append("Tamaño: ").append(resultado.obtenerTamanioGrafoBacktracking()).append("\n")
+				.append("Vértices: ").append(formatearVertices(resultado.obtenerSolucionBacktracking()))
+				.append("\nTiempo: ").append(formatearTiempo(resultado.obtenerTiempoBacktrackingNano()));
 		_areaResultados.setText(texto.toString());
 	}
 

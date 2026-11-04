@@ -28,24 +28,31 @@ public class SolverBacktracking {
 			throw new IllegalArgumentException("La señal de cancelación no puede ser nula.");
 		}
 
-		List<Integer> vertices = new ArrayList<>(instancia.obtenerVertices());
+		ArrayList<Integer> vertices = new ArrayList<>(instancia.obtenerVertices());
 		Collections.sort(vertices);
 
 		Set<Integer> solucion = new HashSet<>();
+
 		buscar(vertices, 0, new ArrayList<>(), solucion, cancelado);
+
 		return solucion;
 	}
 
-	private boolean buscar(List<Integer> vertices, int inicio,
-			List<Integer> candidatos, Set<Integer> solucion, AtomicBoolean cancelado) {
+	private boolean buscar(List<Integer> vertices, int inicio, List<Integer> candidatos, Set<Integer> solucion,
+			AtomicBoolean cancelado) {
+
+		// si el usuario cancela salgo
 		if (cancelado.get()) {
 			return false;
 		}
-		
-		 if (!solucion.isEmpty() && candidatos.size() >= solucion.size()) {
-		        return false;
-		    }
 
+		// poda: si mis candidatos son mas que la solucion, no avanzo por ahi
+		if (!solucion.isEmpty() && candidatos.size() >= solucion.size()) {
+			return false;
+		}
+
+		// si candidatos es dominante y mejor que solucion los guardo en solucion y
+		// salgo
 		if (esConjuntoDominante(candidatos)) {
 			if (solucion.isEmpty() || candidatos.size() < solucion.size()) {
 				solucion.clear();
@@ -55,12 +62,14 @@ public class SolverBacktracking {
 		}
 
 		boolean encontroSolucion = false;
+
 		for (int i = inicio; i < vertices.size(); i++) {
 			candidatos.add(vertices.get(i));
 			if (buscar(vertices, i + 1, candidatos, solucion, cancelado)) {
 				encontroSolucion = true;
 			}
 			candidatos.remove(candidatos.size() - 1);
+
 			if (cancelado.get()) {
 				break;
 			}

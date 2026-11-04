@@ -1,12 +1,11 @@
 package controlador;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import modelo.Aplicacion;
 import modelo.EjecutorStressBacktracking;
 import modelo.GrafoJSON;
 import modelo.ResultadoComparacion;
-
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ControladorPrincipal {
 
@@ -24,21 +23,16 @@ public class ControladorPrincipal {
 			throw new IllegalArgumentException("El archivo JSON no tiene vértices.");
 		}
 
-		_aplicacion.cargarGrafo(
-			archivo.obtenerVertices(),
-			archivo.obtenerAristas()
-		);
+		_aplicacion.cargarGrafo(archivo.obtenerVertices(), archivo.obtenerAristas());
 
 	}
 
 	public void resolver() {
-		
 		_aplicacion.resolver();
 	}
 
-
-	public void resolverBacktracking(AtomicBoolean cancelado) {
-	    _aplicacion.resolverBacktracking(cancelado);
+	public void resolverBacktracking() {
+		_aplicacion.resolverBacktracking();
 	}
 
 	public void limpiarSolucion() {
@@ -46,17 +40,24 @@ public class ControladorPrincipal {
 	}
 
 	public ResultadoComparacion compararAlgoritmos(AtomicBoolean cancelado) {
-
-	    return _aplicacion.compararAlgoritmos(cancelado);
+		return _aplicacion.compararAlgoritmos(cancelado);
 	}
-	
+
 	public ResultadoComparacion compararAlgoritmos() {
 		return _aplicacion.compararAlgoritmos();
 	}
 
-	public void ejecutarStress(int cantidadInstancias, int cantidadVertices,AtomicBoolean cancelado,
+	public void ejecutarStress(int cantidadInstancias, int cantidadVertices, AtomicBoolean cancelado,
 			EjecutorStressBacktracking.ObservadorProgreso observador) {
-		
+
 		new EjecutorStressBacktracking(cantidadInstancias, cantidadVertices).ejecutar(cancelado, observador);
+	}
+
+	public void detenerEjecucion() {
+		_aplicacion.detenerEjecucion();
+	}
+
+	public Boolean fueCancelado() {
+		return _aplicacion.fueCancelado();
 	}
 }
