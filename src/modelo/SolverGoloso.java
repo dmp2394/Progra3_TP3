@@ -5,14 +5,14 @@ import java.util.Set;
 
 public class SolverGoloso {
 
-	private final Grafo<Integer> instancia;
+	private final Grafo<Integer> _instancia;
 
 	public SolverGoloso(Grafo<Integer> instancia) {
 		if (instancia == null) {
 			throw new IllegalArgumentException("El grafo no puede ser nulo.");
 		}
 
-		this.instancia = instancia;
+		_instancia = instancia;
 	}
 
 	public Set<Integer> resolver() {
@@ -27,7 +27,7 @@ public class SolverGoloso {
 		Set<Integer> solucion = new HashSet<>();
 		Set<Integer> dominados = new HashSet<>();
 
-		int cantidadVerticesDeInstancia = instancia.obtenerVertices().size();
+		int cantidadVerticesDeInstancia = _instancia.obtenerVertices().size();
 
 		while (dominados.size() < cantidadVerticesDeInstancia) {
 			
@@ -37,7 +37,7 @@ public class SolverGoloso {
 
 			
 			dominados.add(mejorVerticeElegido);
-			dominados.addAll(instancia.obtenerVecinos(mejorVerticeElegido));
+			dominados.addAll(_instancia.obtenerVecinos(mejorVerticeElegido));
 		}
 
 		return solucion;
@@ -48,7 +48,7 @@ public class SolverGoloso {
 		
 		int mayorAporte = -1;
 
-		for (Integer candidato : instancia.obtenerVertices()) {
+		for (Integer candidato : _instancia.obtenerVertices()) {
 			if (solucion.contains(candidato)) {
 			    continue;
 			}
@@ -75,7 +75,7 @@ public class SolverGoloso {
 		}
 
 	
-		for (Integer vecino : instancia.obtenerVecinos(vertice)) {
+		for (Integer vecino : _instancia.obtenerVecinos(vertice)) {
 			if (!dominados.contains(vecino)) {
 				cantidad++;
 			}

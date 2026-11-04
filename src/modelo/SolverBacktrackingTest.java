@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
@@ -12,37 +13,49 @@ public class SolverBacktrackingTest {
 
 	@Test
 	public void grafoVacioDevuelveConjuntoVacio() {
-		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.vacio()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.vacio();
+
+		Set<Integer> resultado = resolver(grafo);
 
 		assertTrue(resultado.isEmpty());
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test
 	public void unSoloVerticeDebeSerElegido() {
-		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.unSoloVertice()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.unSoloVertice();
+
+		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(conjunto(1), resultado);
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test
 	public void verticesAisladosDebenSerElegidosTodos() {
-		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.verticesAislados()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.verticesAislados();
+
+		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(conjunto(1, 2, 3), resultado);
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test
 	public void grafoEstrellaEncuentraElCentroComoMinimo() {
-		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.estrella()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.estrella();
+
+		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(conjunto(1), resultado);
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test
 	public void encuentraConjuntoDominanteMinimo() {
 		Grafo<Integer> grafo = GrafosDePrueba.camino();
 
-		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
+		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(2, resultado.size());
 		verificarDominacion(grafo, resultado);
@@ -52,7 +65,7 @@ public class SolverBacktrackingTest {
 	public void grafoEjemplo1EncuentraUnMinimoDeTresVertices() {
 		Grafo<Integer> grafo = GrafosDePrueba.ejemplo1();
 
-		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
+		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(3, resultado.size());
 		verificarDominacion(grafo, resultado);
@@ -62,7 +75,7 @@ public class SolverBacktrackingTest {
 	public void grafoDesconectadoCubreTodasLasComponentes() {
 		Grafo<Integer> grafo = GrafosDePrueba.desconectado();
 
-		Set<Integer> resultado = new SolverBacktracking(grafo).resolver();
+		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(3, resultado.size());
 		assertTrue(resultado.contains(5));
@@ -72,6 +85,24 @@ public class SolverBacktrackingTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void rechazaGrafoNulo() {
 		new SolverBacktracking(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rechazaSenialDeCancelacionNula() {
+		new SolverBacktracking(GrafosDePrueba.estrella()).resolver(null);
+	}
+
+	@Test
+	public void canceladoDesdeElInicioNoEncuentraSolucion() {
+		AtomicBoolean cancelado = new AtomicBoolean(true);
+
+		Set<Integer> resultado = new SolverBacktracking(GrafosDePrueba.ejemplo1()).resolver(cancelado);
+
+		assertTrue(resultado.isEmpty());
+	}
+
+	private Set<Integer> resolver(Grafo<Integer> grafo) {
+		return new SolverBacktracking(grafo).resolver(new AtomicBoolean(false));
 	}
 
 	private Set<Integer> conjunto(Integer... vertices) {

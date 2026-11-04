@@ -29,8 +29,8 @@ public class AplicacionTest {
 
     public static class RegistrarObservadorTest {
 
-        private int notificacionesGrafo;
-        private int notificacionesSolucion;
+        private int _notificacionesGrafo;
+        private int _notificacionesSolucion;
 
         @Test(expected = IllegalArgumentException.class)
         public void rechazaObservadorNulo() {
@@ -43,13 +43,13 @@ public class AplicacionTest {
             aplicacion.registrar(new ObservadorConjuntoDominante() {
                 @Override
                 public void notificarNuevoGrafo(Aplicacion origen) {
-                    notificacionesGrafo++;
+                    _notificacionesGrafo++;
                     assertSame(aplicacion, origen);
                 }
 
                 @Override
                 public void notificarSolucion(Aplicacion origen) {
-                    notificacionesSolucion++;
+                    _notificacionesSolucion++;
                     assertSame(aplicacion, origen);
                 }
             });
@@ -57,8 +57,8 @@ public class AplicacionTest {
             aplicacion.agregarVertice(1);
             aplicacion.resolver();
 
-            assertEquals(1, notificacionesGrafo);
-            assertEquals(1, notificacionesSolucion);
+            assertEquals(1, _notificacionesGrafo);
+            assertEquals(1, _notificacionesSolucion);
         }
 
         @Test
@@ -72,10 +72,10 @@ public class AplicacionTest {
             aplicacion.agregarVertice(1);
             aplicacion.resolver();
 
-            assertEquals(1, primerObservador.notificacionesGrafo);
-            assertEquals(1, segundoObservador.notificacionesGrafo);
-            assertEquals(1, primerObservador.notificacionesSolucion);
-            assertEquals(1, segundoObservador.notificacionesSolucion);
+            assertEquals(1, primerObservador._notificacionesGrafo);
+            assertEquals(1, segundoObservador._notificacionesGrafo);
+            assertEquals(1, primerObservador._notificacionesSolucion);
+            assertEquals(1, segundoObservador._notificacionesSolucion);
         }
     }
 
@@ -149,7 +149,7 @@ public class AplicacionTest {
 
             assertEquals(vertices.size(), aplicacion.obtenerVertices().size());
             assertEquals(aristas.size(), aplicacion.obtenerAristas().size());
-            assertEquals(1, observador.notificacionesGrafo);
+            assertEquals(1, observador._notificacionesGrafo);
         }
 
         @Test(expected = IllegalArgumentException.class)
@@ -218,7 +218,7 @@ public class AplicacionTest {
             }
 
             assertEquals(Collections.singletonList(1), aplicacion.obtenerVertices());
-            assertEquals(1, observador.notificacionesGrafo);
+            assertEquals(1, observador._notificacionesGrafo);
         }
 
         @Test
@@ -242,7 +242,7 @@ public class AplicacionTest {
 
             aplicacion.borrarGrafoActual();
 
-            assertEquals(1, observador.notificacionesGrafo);
+            assertEquals(1, observador._notificacionesGrafo);
         }
     }
 
@@ -306,7 +306,7 @@ public class AplicacionTest {
 
             aplicacion.resolver();
 
-            assertEquals(1, observador.notificacionesSolucion);
+            assertEquals(1, observador._notificacionesSolucion);
         }
 
         @Test(expected = UnsupportedOperationException.class)
@@ -342,17 +342,17 @@ public class AplicacionTest {
 
     private static class ContadorObservador implements ObservadorConjuntoDominante {
 
-        private int notificacionesGrafo;
-        private int notificacionesSolucion;
+        private int _notificacionesGrafo;
+        private int _notificacionesSolucion;
 
         @Override
         public void notificarNuevoGrafo(Aplicacion aplicacion) {
-            notificacionesGrafo++;
+            _notificacionesGrafo++;
         }
 
         @Override
         public void notificarSolucion(Aplicacion aplicacion) {
-            notificacionesSolucion++;
+            _notificacionesSolucion++;
         }
     }
 }

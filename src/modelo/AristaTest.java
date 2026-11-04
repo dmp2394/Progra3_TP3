@@ -13,27 +13,27 @@ import org.junit.runner.RunWith;
 @RunWith(Enclosed.class)
 public class AristaTest {
 
-	private static Integer extremo1 = 1;
-	private static Integer extremo2 = 2;
-	private static Integer extremo3 = 3;
-	private static Integer extremo4 = 4;
+	private static Integer _extremo1 = 1;
+	private static Integer _extremo2 = 2;
+	private static Integer _extremo3 = 3;
+	private static Integer _extremo4 = 4;
 
-	static Arista<Integer> arista12YPeso100 = new Arista<>(extremo1, extremo2);
-	static Arista<Integer> arista34YPeso100 = new Arista<>(extremo3, extremo4);
-	static Arista<Integer> arista34YPeso50 = new Arista<>(extremo3, extremo4);
-	static Arista<Integer> otraArista12YPeso100 = new Arista<>(extremo1, extremo2);
-	static Arista<Integer> arista12YPeso100AlReves = new Arista<>(extremo2, extremo1);
+	static Arista<Integer> _arista12YPeso100 = new Arista<>(_extremo1, _extremo2);
+	static Arista<Integer> _arista34YPeso100 = new Arista<>(_extremo3, _extremo4);
+	static Arista<Integer> _arista34YPeso50 = new Arista<>(_extremo3, _extremo4);
+	static Arista<Integer> _otraArista12YPeso100 = new Arista<>(_extremo1, _extremo2);
+	static Arista<Integer> _arista12YPeso100AlReves = new Arista<>(_extremo2, _extremo1);
 
 	public static class ConstructorExcepcionesYCasosBorde {
 
 		@Test(expected = IllegalArgumentException.class)
 		public void noPermiteCrearAristaConExtremo1NuloTest() {
-			new Arista<>(null, extremo2);
+			new Arista<>(null, _extremo2);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
 		public void noPermiteCrearAristaConExtremo2NuloTest() {
-			new Arista<>(extremo1, null);
+			new Arista<>(_extremo1, null);
 		}
 
 		@Test(expected = IllegalArgumentException.class)
@@ -43,7 +43,7 @@ public class AristaTest {
 
 		@Test(expected = IllegalArgumentException.class)
 		public void noPermiteCrearAristaConLoopTest() {
-			new Arista<>(extremo1, extremo1);
+			new Arista<>(_extremo1, _extremo1);
 		}
 
 	}
@@ -52,12 +52,12 @@ public class AristaTest {
 
 		@Test
 		public void obtenerExtremo1Test() {
-			assertEquals(extremo1, arista12YPeso100.obtenerExtremo1());
+			assertEquals(_extremo1, _arista12YPeso100.obtenerExtremo1());
 		}
 
 		@Test
 		public void obtenerExtremo2Test() {
-			assertEquals(extremo2, arista12YPeso100.obtenerExtremo2());
+			assertEquals(_extremo2, _arista12YPeso100.obtenerExtremo2());
 		}
 	}
 
@@ -65,26 +65,26 @@ public class AristaTest {
 
 		@Test
 		public void equalsNuloTest() {
-			assertFalse(arista12YPeso100.equals(null));
+			assertFalse(_arista12YPeso100.equals(null));
 		}
 
 		@Test
 		public void equalsMismoObjetoTest() {
-			assertTrue(arista12YPeso100.equals(arista12YPeso100));
+			assertTrue(_arista12YPeso100.equals(_arista12YPeso100));
 		}
 
 		@Test
 		public void equalsSimetricoTest() {
 
-			boolean simetrico = arista12YPeso100.equals(arista12YPeso100AlReves)
-					&& arista12YPeso100AlReves.equals(arista12YPeso100);
+			boolean simetrico = _arista12YPeso100.equals(_arista12YPeso100AlReves)
+					&& _arista12YPeso100AlReves.equals(_arista12YPeso100);
 
 			assertTrue(simetrico);
 		}
 
 		@Test
 		public void equalsMismosExtremosDistintoPesoTest() {
-			assertTrue(arista34YPeso100.equals(arista34YPeso50));
+			assertTrue(_arista34YPeso100.equals(_arista34YPeso50));
 		}
 	}
 
@@ -93,12 +93,12 @@ public class AristaTest {
 		@Test
 		public void equalsMismosExtremosTest() {
 
-			assertTrue(arista12YPeso100.equals(otraArista12YPeso100));
+			assertTrue(_arista12YPeso100.equals(_otraArista12YPeso100));
 		}
 
 		@Test
 		public void equalsDistintosExtremosTest() {
-			assertFalse(arista12YPeso100.equals(arista34YPeso100));
+			assertFalse(_arista12YPeso100.equals(_arista34YPeso100));
 		}
 	}
 
@@ -106,8 +106,8 @@ public class AristaTest {
 
 		@Test
 		public void hashCodeExtremosAlRevesTest() {
-			Arista<Integer> arista1 = new Arista<>(extremo1, extremo2);
-			Arista<Integer> arista2 = new Arista<>(extremo2, extremo1);
+			Arista<Integer> arista1 = new Arista<>(_extremo1, _extremo2);
+			Arista<Integer> arista2 = new Arista<>(_extremo2, _extremo1);
 
 			assertEquals(arista1.hashCode(), arista2.hashCode());
 		}
@@ -117,8 +117,8 @@ public class AristaTest {
 
 		@Test
 		public void hashCodeAristasIgualesTest() {
-			Arista<Integer> arista1 = new Arista<>(extremo1, extremo2);
-			Arista<Integer> arista2 = new Arista<>(extremo1, extremo2);
+			Arista<Integer> arista1 = new Arista<>(_extremo1, _extremo2);
+			Arista<Integer> arista2 = new Arista<>(_extremo1, _extremo2);
 
 			assertEquals(arista1.hashCode(), arista2.hashCode());
 		}
@@ -127,8 +127,8 @@ public class AristaTest {
 		public void hashCodeContainsEnHashSetTest() {
 			HashSet<Arista<Integer>> aristas = new HashSet<>();
 
-			Arista<Integer> arista1 = new Arista<>(extremo1, extremo2);
-			Arista<Integer> arista2 = new Arista<>(extremo2, extremo1);
+			Arista<Integer> arista1 = new Arista<>(_extremo1, _extremo2);
+			Arista<Integer> arista2 = new Arista<>(_extremo2, _extremo1);
 
 			aristas.add(arista1);
 
@@ -139,8 +139,8 @@ public class AristaTest {
 		public void hashCodeNoDuplicaEnHashSetTest() {
 			HashSet<Arista<Integer>> aristas = new HashSet<>();
 
-			Arista<Integer> arista1 = new Arista<>(extremo1, extremo2);
-			Arista<Integer> arista2 = new Arista<>(extremo2, extremo1);
+			Arista<Integer> arista1 = new Arista<>(_extremo1, _extremo2);
+			Arista<Integer> arista2 = new Arista<>(_extremo2, _extremo1);
 
 			aristas.add(arista1);
 			aristas.add(arista2);

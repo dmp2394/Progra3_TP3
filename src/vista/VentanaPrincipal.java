@@ -274,8 +274,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		SwingWorker<Void, ResultadoStress> worker = new SwingWorker<Void, ResultadoStress>() {
 			@Override
 			protected Void doInBackground() {
-				// arreglar esto
-				// _controlador.ejecutarStress(20, 8, resultado -> publish(resultado));
+				_controlador.ejecutarStress(20, 8, resultado -> publish(resultado));
 				return null;
 			}
 

@@ -12,17 +12,17 @@ public class EjecutorStressBacktracking {
 		void informar(ResultadoStress resultado);
 	}
 
-	private final int cantidadInstancias;
-	private final int cantidadVertices;
-	private final Random aleatorio;
+	private final int _cantidadInstancias;
+	private final int _cantidadVertices;
+	private final Random _aleatorio;
 
 	public EjecutorStressBacktracking(int cantidadInstancias, int cantidadVertices) {
 		if (cantidadInstancias <= 0 || cantidadVertices < 1) {
 			throw new IllegalArgumentException("La cantidad de instancias y vértices debe ser positiva.");
 		}
-		this.cantidadInstancias = cantidadInstancias;
-		this.cantidadVertices = cantidadVertices;
-		this.aleatorio = new Random();
+		_cantidadInstancias = cantidadInstancias;
+		_cantidadVertices = cantidadVertices;
+		_aleatorio = new Random();
 	}
 
 	public List<ResultadoStress> ejecutar(AtomicBoolean cancelado,
@@ -30,7 +30,7 @@ public class EjecutorStressBacktracking {
 		List<ResultadoStress> resultados = new ArrayList<>();
 
 		for (int instancia = 1;
-				instancia <= cantidadInstancias && !cancelado.get();
+				instancia <= _cantidadInstancias && !cancelado.get();
 				instancia++) {
 			Grafo<Integer> grafo = generarGrafo();
 
@@ -48,7 +48,7 @@ public class EjecutorStressBacktracking {
 			}
 
 			ResultadoStress resultado = new ResultadoStress(
-				instancia, cantidadVertices, grafo.obtenerAristas().size(),
+				instancia, _cantidadVertices, grafo.obtenerAristas().size(),
 				tiempoGoloso, tiempoBacktracking,
 				solucionGolosa.size(), solucionBacktracking.size());
 			resultados.add(resultado);
@@ -62,15 +62,15 @@ public class EjecutorStressBacktracking {
 
 	private Grafo<Integer> generarGrafo() {
 		Grafo<Integer> grafo = new Grafo<>();
-		for (int vertice = 1; vertice <= cantidadVertices; vertice++) {
+		for (int vertice = 1; vertice <= _cantidadVertices; vertice++) {
 			grafo.agregarVertice(vertice);
 		}
 
-		for (int vertice1 = 1; vertice1 <= cantidadVertices; vertice1++) {
+		for (int vertice1 = 1; vertice1 <= _cantidadVertices; vertice1++) {
 			for (int vertice2 = vertice1 + 1;
-					vertice2 <= cantidadVertices;
+					vertice2 <= _cantidadVertices;
 					vertice2++) {
-				if (aleatorio.nextBoolean()) {
+				if (_aleatorio.nextBoolean()) {
 					grafo.agregarArista(vertice1, vertice2);
 				}
 			}

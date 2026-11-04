@@ -40,7 +40,7 @@ public final class Tema {
 
 	private static final Color FONDO_SELECCION_LISTA = new Color(75, 105, 145);
 
-	private static boolean oscuro;
+	private static boolean _oscuro;
 
 	private Tema() {
 	}
@@ -67,7 +67,7 @@ public final class Tema {
 	}
 
 	private static void cambiarTema(boolean activarOscuro) {
-		oscuro = activarOscuro;
+		_oscuro = activarOscuro;
 
 		for (Window ventana : Window.getWindows()) {
 			if (ventana.isDisplayable()) {
@@ -100,12 +100,12 @@ public final class Tema {
 	}
 
 	private static void actualizarBoton(JToggleButton boton) {
-		boton.setSelected(oscuro);
-		boton.setText(oscuro ? "☀️  Modo claro" : "🌙  Modo oscuro");
+		boton.setSelected(_oscuro);
+		boton.setText(_oscuro ? "☀️  Modo claro" : "🌙  Modo oscuro");
 		boton.setBackground(fondoControl());
 		boton.setForeground(texto());
 
-		Color colorBorde = oscuro ? BORDE_BOTON_OSCURO : BORDE_BOTON_CLARO;
+		Color colorBorde = _oscuro ? BORDE_BOTON_OSCURO : BORDE_BOTON_CLARO;
 
 		boton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(colorBorde),
 				BorderFactory.createEmptyBorder(5, 10, 5, 10)));
@@ -120,7 +120,7 @@ public final class Tema {
 	}
 
 	private static Color fondoControl() {
-		return oscuro ? CONTROL_OSCURO : CONTROL_CLARO;
+		return _oscuro ? CONTROL_OSCURO : CONTROL_CLARO;
 	}
 
 	private static void aplicarDetallesSegunTipo(Component componente) {
@@ -147,11 +147,11 @@ public final class Tema {
 	}
 
 	private static Color texto() {
-		return oscuro ? TEXTO_OSCURO : TEXTO_CLARO;
+		return _oscuro ? TEXTO_OSCURO : TEXTO_CLARO;
 	}
 
 	public static boolean esOscuro() {
-		return oscuro;
+		return _oscuro;
 	}
 
 	private static boolean esBotonTema(Component componente) {

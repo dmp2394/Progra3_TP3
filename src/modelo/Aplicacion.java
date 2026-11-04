@@ -12,7 +12,7 @@ public class Aplicacion {
 	private Grafo<Integer> _grafo;
 	private ArrayList<ObservadorConjuntoDominante> _observadores;
 	private Set<Integer> _solucion;
-	private AtomicBoolean _cancelado;
+	private final AtomicBoolean _cancelado;
 
 	public Aplicacion() {
 		_grafo = new Grafo<Integer>();
@@ -100,39 +100,34 @@ public class Aplicacion {
 	}
 
 	public void resolverBacktracking() {
-		resolverBacktracking(new AtomicBoolean(false));
-	}
+		_cancelado.set(false);
 
-	public void resolverBacktracking(AtomicBoolean cancelado) {
 		SolverBacktracking solverBacktracking = new SolverBacktracking(_grafo);
 
-		Set<Integer> resultado = solverBacktracking.resolver(cancelado);
+		Set<Integer> resultado = solverBacktracking.resolver(_cancelado);
 
-		if (!cancelado.get()) {
+		if (!_cancelado.get()) {
 			_solucion = resultado;
 			notificarObservadoresSolucion();
 		}
 	}
 
 	public ResultadoComparacion compararAlgoritmos() {
-		return compararAlgoritmos(new AtomicBoolean(false));
-	}
-
-	public ResultadoComparacion compararAlgoritmos(AtomicBoolean cancelado) {
+		_cancelado.set(false);
 
 		long inicioGoloso = System.nanoTime();
 		Set<Integer> solucionGolosa = new SolverGoloso(_grafo).resolver();
 		long tiempoGoloso = System.nanoTime() - inicioGoloso;
 
-		if (cancelado.get()) {
+		if (_cancelado.get()) {
 			return null;
 		}
 
 		long inicioBacktracking = System.nanoTime();
-		Set<Integer> solucionBacktracking = new SolverBacktracking(_grafo).resolver(cancelado);
+		Set<Integer> solucionBacktracking = new SolverBacktracking(_grafo).resolver(_cancelado);
 		long tiempoBacktracking = System.nanoTime() - inicioBacktracking;
 
-		if (cancelado.get()) {
+		if (_cancelado.get()) {
 			return null;
 		}
 
@@ -156,11 +151,18 @@ public class Aplicacion {
 		notificarObservadoresNuevoGrafo();
 	}
 
+	public void ejecutarStress(int cantidadInstancias, int cantidadVertices,
+			EjecutorStressBacktracking.ObservadorProgreso observador) {
+		_cancelado.set(false);
+
+		new EjecutorStressBacktracking(cantidadInstancias, cantidadVertices).ejecutar(_cancelado, observador);
+	}
+
 	public void detenerEjecucion() {
 		_cancelado.set(true);
 	}
 
-	public Boolean fueCancelado() {
+	public boolean fueCancelado() {
 		return _cancelado.get();
 	}
 }

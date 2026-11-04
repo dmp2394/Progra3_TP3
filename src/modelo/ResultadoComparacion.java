@@ -5,49 +5,49 @@ import java.util.Set;
 
 public class ResultadoComparacion {
 
-	private final Set<Integer> solucionGolosa;
-	private final Set<Integer> solucionBacktracking;
-	private final long tiempoGolosoNano;
-	private final long tiempoBacktrackingNano;
+	private final Set<Integer> _solucionGolosa;
+	private final Set<Integer> _solucionBacktracking;
+	private final long _tiempoGolosoNano;
+	private final long _tiempoBacktrackingNano;
 
 	public ResultadoComparacion(Set<Integer> solucionGolosa, Set<Integer> solucionBacktracking,
 			long tiempoGolosoNano, long tiempoBacktrackingNano) {
-		this.solucionGolosa = Collections.unmodifiableSet(solucionGolosa);
-		this.solucionBacktracking = Collections.unmodifiableSet(solucionBacktracking);
-		this.tiempoGolosoNano = tiempoGolosoNano;
-		this.tiempoBacktrackingNano = tiempoBacktrackingNano;
+		_solucionGolosa = Collections.unmodifiableSet(solucionGolosa);
+		_solucionBacktracking = Collections.unmodifiableSet(solucionBacktracking);
+		_tiempoGolosoNano = tiempoGolosoNano;
+		_tiempoBacktrackingNano = tiempoBacktrackingNano;
 	}
 
 	public Set<Integer> obtenerSolucionGolosa() {
-		return solucionGolosa;
+		return _solucionGolosa;
 	}
 
 	public Set<Integer> obtenerSolucionBacktracking() {
-		return solucionBacktracking;
+		return _solucionBacktracking;
 	}
 
 	public long obtenerTiempoGolosoNano() {
-		return tiempoGolosoNano;
+		return _tiempoGolosoNano;
 	}
 
 	public long obtenerTiempoBacktrackingNano() {
-		return tiempoBacktrackingNano;
+		return _tiempoBacktrackingNano;
 	}
 
 	public int obtenerTamanioGrafoGoloso() {
-		return solucionGolosa.size();
+		return _solucionGolosa.size();
 	}
 
 	public int obtenerTamanioGrafoBacktracking() {
-		return solucionBacktracking.size();
+		return _solucionBacktracking.size();
 	}
 
 	public String obtenerResumen() {
 		return String.format(
 			"Goloso: %d vértices, %.3f ms | Backtracking: %d vértices, %.3f ms",
-			solucionGolosa.size(),
-			tiempoGolosoNano / 1_000_000.0,
-			solucionBacktracking.size(),
-			tiempoBacktrackingNano / 1_000_000.0);
+			_solucionGolosa.size(),
+			_tiempoGolosoNano / 1_000_000.0,
+			_solucionBacktracking.size(),
+			_tiempoBacktrackingNano / 1_000_000.0);
 	}
 }

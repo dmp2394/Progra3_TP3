@@ -13,30 +13,42 @@ public class SolverGolosoTest {
 
 	@Test
 	public void grafoVacioDevuelveConjuntoVacio() {
-		Set<Integer> resultado = new SolverGoloso(GrafosDePrueba.vacio()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.vacio();
+
+		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
 		assertTrue(resultado.isEmpty());
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test
 	public void unSoloVerticeDebeSerElegido() {
-		Set<Integer> resultado = new SolverGoloso(GrafosDePrueba.unSoloVertice()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.unSoloVertice();
+
+		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
 		assertEquals(conjunto(1), resultado);
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test
 	public void verticesAisladosDebenSerElegidosTodos() {
-		Set<Integer> resultado = new SolverGoloso(GrafosDePrueba.verticesAislados()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.verticesAislados();
+
+		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
 		assertEquals(conjunto(1, 2, 3), resultado);
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test
 	public void grafoEstrellaEligeElCentro() {
-		Set<Integer> resultado = new SolverGoloso(GrafosDePrueba.estrella()).resolver();
+		Grafo<Integer> grafo = GrafosDePrueba.estrella();
+
+		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
 		assertEquals(conjunto(1), resultado);
+		verificarDominacion(grafo, resultado);
 	}
 
 	@Test

@@ -9,18 +9,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SolverBacktracking {
 
-	private final Grafo<Integer> instancia;
+	private final Grafo<Integer> _instancia;
+
+	private List<Integer> _vertices;
+	private List<Integer> _candidatos;
+	private Set<Integer> _solucion;
+	private AtomicBoolean _cancelado;
 
 	public SolverBacktracking(Grafo<Integer> instancia) {
 		if (instancia == null) {
 			throw new IllegalArgumentException("El grafo no puede ser nulo.");
 		}
 
-		this.instancia = instancia;
-	}
-
-	public Set<Integer> resolver() {
-		return resolver(new AtomicBoolean(false));
+		_instancia = instancia;
 	}
 
 	public Set<Integer> resolver(AtomicBoolean cancelado) {
@@ -28,63 +29,59 @@ public class SolverBacktracking {
 			throw new IllegalArgumentException("La señal de cancelación no puede ser nula.");
 		}
 
-		ArrayList<Integer> vertices = new ArrayList<>(instancia.obtenerVertices());
-		Collections.sort(vertices);
+		_cancelado = cancelado;
 
-		Set<Integer> solucion = new HashSet<>();
+		_vertices = new ArrayList<>(_instancia.obtenerVertices());
+		Collections.sort(_vertices);
 
-		buscar(vertices, 0, new ArrayList<>(), solucion, cancelado);
+		_candidatos = new ArrayList<>();
+		_solucion = new HashSet<>();
 
-		return solucion;
+		buscar(0);
+
+		return _solucion;
 	}
 
-	private boolean buscar(List<Integer> vertices, int inicio, List<Integer> candidatos, Set<Integer> solucion,
-			AtomicBoolean cancelado) {
+	private void buscar(int inicio) {
 
 		// si el usuario cancela salgo
-		if (cancelado.get()) {
-			return false;
+		if (_cancelado.get()) {
+			return;
 		}
 
 		// poda: si mis candidatos son mas que la solucion, no avanzo por ahi
-		if (!solucion.isEmpty() && candidatos.size() >= solucion.size()) {
-			return false;
+		if (!_solucion.isEmpty() && _candidatos.size() >= _solucion.size()) {
+			return;
 		}
 
 		// si candidatos es dominante y mejor que solucion los guardo en solucion y
 		// salgo
-		if (esConjuntoDominante(candidatos)) {
-			if (solucion.isEmpty() || candidatos.size() < solucion.size()) {
-				solucion.clear();
-				solucion.addAll(candidatos);
+		if (esConjuntoDominante(_candidatos)) {
+			if (_solucion.isEmpty() || _candidatos.size() < _solucion.size()) {
+				_solucion.clear();
+				_solucion.addAll(_candidatos);
 			}
-			return true;
+			return;
 		}
 
-		boolean encontroSolucion = false;
+		for (int i = inicio; i < _vertices.size(); i++) {
+			_candidatos.add(_vertices.get(i));
+			buscar(i + 1);
+			_candidatos.remove(_candidatos.size() - 1);
 
-		for (int i = inicio; i < vertices.size(); i++) {
-			candidatos.add(vertices.get(i));
-			if (buscar(vertices, i + 1, candidatos, solucion, cancelado)) {
-				encontroSolucion = true;
-			}
-			candidatos.remove(candidatos.size() - 1);
-
-			if (cancelado.get()) {
+			if (_cancelado.get()) {
 				break;
 			}
 		}
-
-		return encontroSolucion;
 	}
 
 	private boolean esConjuntoDominante(List<Integer> candidatos) {
 		Set<Integer> dominados = new HashSet<>(candidatos);
 
 		for (Integer vertice : candidatos) {
-			dominados.addAll(instancia.obtenerVecinos(vertice));
+			dominados.addAll(_instancia.obtenerVecinos(vertice));
 		}
 
-		return dominados.containsAll(instancia.obtenerVertices());
+		return dominados.containsAll(_instancia.obtenerVertices());
 	}
 }
