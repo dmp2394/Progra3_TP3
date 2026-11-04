@@ -3,6 +3,7 @@ package modelo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
@@ -10,24 +11,64 @@ import org.junit.Test;
 public class EjecutorStressBacktrackingTest {
 
 	@Test
-	public void ejecutaInstanciasAleatorias() {
-		EjecutorStressBacktracking stress =
-			new EjecutorStressBacktracking(3, 6);
+	public void correHastaQueSeCancela() {
+		List<ResultadoStress> resultados = ejecutarInstancias(4, 3);
 
-		assertEquals(3, stress.ejecutar(new AtomicBoolean(false), null).size());
+		assertEquals(3, resultados.size());
 	}
 
 	@Test
-	public void puedeCancelarElStress() {
-		AtomicBoolean cancelado = new AtomicBoolean(true);
-		EjecutorStressBacktracking stress =
-			new EjecutorStressBacktracking(3, 6);
+	public void elTamanioCreceDeAUnVertice() {
+		List<ResultadoStress> resultados = ejecutarInstancias(4, 3);
 
-		assertTrue(stress.ejecutar(cancelado, null).isEmpty());
+		assertEquals(4, resultados.get(0).obtenerCantidadVertices());
+		assertEquals(5, resultados.get(1).obtenerCantidadVertices());
+		assertEquals(6, resultados.get(2).obtenerCantidadVertices());
+	}
+
+	@Test
+	public void numeraLasInstanciasDesdeUno() {
+		List<ResultadoStress> resultados = ejecutarInstancias(4, 3);
+
+		assertEquals(1, resultados.get(0).obtenerNumeroInstancia());
+		assertEquals(3, resultados.get(2).obtenerNumeroInstancia());
+	}
+
+	@Test
+	public void backtrackingNuncaEsPeorQueGoloso() {
+		List<ResultadoStress> resultados = ejecutarInstancias(4, 5);
+
+		for (ResultadoStress resultado : resultados) {
+			assertTrue(resultado.obtenerTamanioBacktracking() <= resultado.obtenerTamanioGoloso());
+		}
+	}
+
+	@Test
+	public void canceladoDesdeElInicioNoEjecutaNada() {
+		EjecutorStressBacktracking stress = new EjecutorStressBacktracking(4);
+
+		assertTrue(stress.ejecutar(new AtomicBoolean(true), null).isEmpty());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void rechazaConfiguracionesInvalidas() {
-		new EjecutorStressBacktracking(0, 6);
+	public void rechazaTamanioInicialInvalido() {
+		new EjecutorStressBacktracking(0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rechazaSenialDeCancelacionNula() {
+		new EjecutorStressBacktracking(4).ejecutar(null, null);
+	}
+
+	// Corre el stress y lo cancela desde el observador al llegar a la última instancia pedida.
+	private List<ResultadoStress> ejecutarInstancias(int tamanioInicial, int cantidadInstancias) {
+		AtomicBoolean cancelado = new AtomicBoolean(false);
+		EjecutorStressBacktracking stress = new EjecutorStressBacktracking(tamanioInicial);
+
+		return stress.ejecutar(cancelado, resultado -> {
+			if (resultado.obtenerNumeroInstancia() == cantidadInstancias) {
+				cancelado.set(true);
+			}
+		});
 	}
 }

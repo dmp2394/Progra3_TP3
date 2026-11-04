@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,16 +23,8 @@ import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.swing_viewer.SwingViewer;
-import org.graphstream.ui.swing_viewer.ViewPanel;
-import org.graphstream.ui.view.Viewer;
-
 import controlador.ControladorPrincipal;
 import modelo.Aplicacion;
-import modelo.Arista;
 import modelo.ObservadorConjuntoDominante;
 import modelo.ResultadoComparacion;
 import modelo.ResultadoStress;
@@ -41,7 +34,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private JFrame _frame;
 	private ControladorPrincipal _controlador;
 	private Aplicacion _aplicacion;
-	private Graph _grafo;
+	private VisualizadorGrafo _visualizadorGrafo;
 	private JLabel _etiquetaEstadisticas;
 	private JTextArea _areaResultados;
 	private JButton _botonDetener;
@@ -58,8 +51,6 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private int _intervaloResolviendo = 421;
 
 	public static void main(String[] args) {
-		System.setProperty("org.graphstream.ui", "swing");
-
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -187,7 +178,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private void detenerEjecucion() {
 		_controlador.detenerEjecucion();
-
+		_etiquetaEstadisticas.setText("");
 	}
 
 	private JButton crearBotonReset() {
@@ -212,7 +203,6 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_controlador.limpiarSolucion();
 		mostrarGrafo();
 		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas - solución limpiada",
-				// MMMMMM RARIII...
 				_aplicacion.obtenerVertices().size(), _aplicacion.obtenerAristas().size()));
 	}
 
@@ -240,11 +230,11 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 					ResultadoComparacion resultado = get();
 					if (_controlador.fueCancelado()) {
 						_areaResultados.setText("Cancelado.");
-						_etiquetaEstadisticas.setText("Comparación cancelada");
 						return;
 					}
 					pintarSolucionSobreGrafo(resultado.obtenerSolucionBacktracking());
-					_etiquetaEstadisticas.setText(resultado.obtenerResumen());
+					_etiquetaEstadisticas
+							.setText(resultado.obtenerResumen() + " | En el grafo: solución del backtracking");
 					mostrarComparacion(resultado);
 				} catch (Exception ex) {
 					if (_controlador.fueCancelado()) {
@@ -268,22 +258,29 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_botonStress.setEnabled(false);
 		_botonDetener.setEnabled(true);
 		_botonStress.setText("Ejecutando...");
-		_areaResultados.setText("Stress iniciado\n20 instancias - 8 vértices\n");
-		_etiquetaEstadisticas.setText("Stress iniciado: 20 instancias, 8 vértices");
+		_visualizadorGrafo.limpiar();
+		_areaResultados.setText("STRESS\n\n");
+		_etiquetaEstadisticas.setText("Stress iniciado: tamaño creciente desde "
+				+ Aplicacion.TAMANIO_INICIAL_STRESS + " vértices. Presione Detener para cortar.");
 
 		SwingWorker<Void, ResultadoStress> worker = new SwingWorker<Void, ResultadoStress>() {
 			@Override
 			protected Void doInBackground() {
-				_controlador.ejecutarStress(20, 8, resultado -> publish(resultado));
+				_controlador.ejecutarStress(resultado -> publish(resultado));
 				return null;
 			}
 
 			@Override
 			protected void process(List<ResultadoStress> resultados) {
-				if (!resultados.isEmpty()) {
-					_etiquetaEstadisticas.setText(resultados.get(resultados.size() - 1).obtenerResumen());
+				for (ResultadoStress resultado : resultados) {
+					_areaResultados.append(formatearResultadoStress(resultado));
+				}
+				_areaResultados.setCaretPosition(_areaResultados.getDocument().getLength());
+
+				// Si ya se canceló, la barra de abajo quedó vacía y no se vuelve a escribir.
+				if (!_controlador.fueCancelado()) {
 					ResultadoStress ultimo = resultados.get(resultados.size() - 1);
-					_areaResultados.append(ultimo.obtenerResumen() + "\n");
+					_etiquetaEstadisticas.setText(ultimo.obtenerResumen());
 				}
 			}
 
@@ -292,9 +289,6 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 				_botonStress.setEnabled(true);
 				_botonDetener.setEnabled(false);
 				_botonStress.setText("Stress");
-				if (_controlador.fueCancelado() && _etiquetaEstadisticas.getText().indexOf("cancelado") < 0) {
-					_etiquetaEstadisticas.setText(_etiquetaEstadisticas.getText() + " - cancelado");
-				}
 			}
 		};
 		_trabajoActual = worker;
@@ -362,86 +356,48 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		}
 	}
 
-	private ViewPanel crearVisualizacionGrafo() {
-		_grafo = new SingleGraph("Grafo");
+	private JComponent crearVisualizacionGrafo() {
+		_visualizadorGrafo = new VisualizadorGrafo("Grafo");
 
-		SwingViewer viewer = new SwingViewer(_grafo, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-		viewer.enableAutoLayout();
-
-		ViewPanel panelGrafo = (ViewPanel) viewer.addDefaultView(false);
+		JComponent panelGrafo = _visualizadorGrafo.obtenerPanel();
 		panelGrafo.setBounds(10, 50, 790, 600);
 
 		return panelGrafo;
 	}
 
-	// TODO: el parametro esta al pedo aca? ya es un atributo de clase
 	@Override
-	public void notificarNuevoGrafo(Aplicacion aplicacion) {
+	public void notificarNuevoGrafo() {
 		mostrarGrafo();
 		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas",
-				aplicacion.obtenerVertices().size(), aplicacion.obtenerAristas().size()));
+				_aplicacion.obtenerVertices().size(), _aplicacion.obtenerAristas().size()));
 	}
 
 	private void mostrarGrafo() {
-		_grafo.clear();
-		aplicarTemaAGrafo();
-
-		agregarVertices();
-		agregarAristas();
+		_visualizadorGrafo.mostrar(_aplicacion.obtenerVertices(), _aplicacion.obtenerAristas());
 	}
 
 	private void aplicarTemaAGrafo() {
-		if (_grafo == null) {
+		if (_visualizadorGrafo == null) {
 			return;
 		}
 
-		if (Tema.esOscuro()) {
-			_grafo.setAttribute("ui.stylesheet",
-					"node { size: 24px; fill-color: #3A3D42; stroke-mode: plain; stroke-color: #ECEFF1; text-size: 14; text-alignment: center; }"
-							+ "edge { fill-color: #AAB0B6; }" + "graph { fill-color: #2B2D30; }");
-		} else {
-			_grafo.setAttribute("ui.stylesheet",
-					"node { size: 24px; fill-color: #DDDDDD; stroke-mode: plain; stroke-color: black; text-size: 14; text-alignment: center; }"
-							+ "edge { fill-color: black; }" + "graph { fill-color: white; }");
-		}
-	}
-
-	// MMMMMMM RARIII
-	// TODO: va directo al modelo. Esta mal?
-	private void agregarVertices() {
-		for (Integer vertice : _aplicacion.obtenerVertices()) {
-			Node nodo = _grafo.addNode(String.valueOf(vertice));
-			nodo.setAttribute("ui.label", String.valueOf(vertice));
-		}
-	}
-
-	// TODO: va directo al modelo. Esta mal?
-	private void agregarAristas() {
-		for (Arista<Integer> arista : _aplicacion.obtenerAristas()) {
-			String extremo1 = String.valueOf(arista.obtenerExtremo1());
-			String extremo2 = String.valueOf(arista.obtenerExtremo2());
-			String id = extremo1 + "-" + extremo2;
-			_grafo.addEdge(id, extremo1, extremo2);
-		}
+		_visualizadorGrafo.aplicarTema();
 	}
 
 	@Override
-	public void notificarSolucion(Aplicacion aplicacion) {
-		mostrarSolucionSobreGrafo(aplicacion);
+	public void notificarSolucion() {
+		mostrarSolucionSobreGrafo();
 		mostrarSolucionIndividual(_ultimoAlgoritmo == null ? "Algoritmo" : _ultimoAlgoritmo,
-				aplicacion.obtenerSolucion());
+				_aplicacion.obtenerSolucion());
 	}
 
-	private void mostrarSolucionSobreGrafo(Aplicacion aplicacion) {
-		Set<Integer> conjuntoSolucion = aplicacion.obtenerSolucion();
+	private void mostrarSolucionSobreGrafo() {
+		Set<Integer> conjuntoSolucion = _aplicacion.obtenerSolucion();
 		pintarSolucionSobreGrafo(conjuntoSolucion);
 	}
 
 	private void pintarSolucionSobreGrafo(Set<Integer> conjuntoSolucion) {
-		for (Integer vertice : conjuntoSolucion) {
-			Node nodo = _grafo.getNode(String.valueOf(vertice));
-			nodo.setAttribute("ui.style", "fill-color: yellow;");
-		}
+		_visualizadorGrafo.pintarSolucion(conjuntoSolucion);
 	}
 
 	private JScrollPane crearPanelResultados() {
@@ -479,6 +435,13 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 				.append("Vértices: ").append(formatearVertices(resultado.obtenerSolucionBacktracking()))
 				.append("\nTiempo: ").append(formatearTiempo(resultado.obtenerTiempoBacktrackingNano()));
 		_areaResultados.setText(texto.toString());
+	}
+
+	private String formatearResultadoStress(ResultadoStress resultado) {
+		return String.format("#%d: %d vértices\nGoloso: %d - %s\nBacktracking: %d - %s\n\n",
+				resultado.obtenerNumeroInstancia(), resultado.obtenerCantidadVertices(),
+				resultado.obtenerTamanioGoloso(), formatearTiempo(resultado.obtenerTiempoGolosoNano()),
+				resultado.obtenerTamanioBacktracking(), formatearTiempo(resultado.obtenerTiempoBacktrackingNano()));
 	}
 
 	private String formatearVertices(Set<Integer> vertices) {

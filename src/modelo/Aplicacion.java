@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Aplicacion {
 
+	public static final int TAMANIO_INICIAL_STRESS = 5;
+
 	private Grafo<Integer> _grafo;
 	private ArrayList<ObservadorConjuntoDominante> _observadores;
 	private Set<Integer> _solucion;
@@ -73,12 +75,12 @@ public class Aplicacion {
 
 	private void notificarObservadoresNuevoGrafo() {
 		for (ObservadorConjuntoDominante observador : _observadores)
-			observador.notificarNuevoGrafo(this);
+			observador.notificarNuevoGrafo();
 	}
 
 	private void notificarObservadoresSolucion() {
 		for (ObservadorConjuntoDominante observador : _observadores)
-			observador.notificarSolucion(this);
+			observador.notificarSolucion();
 	}
 
 	public List<Integer> obtenerVertices() {
@@ -151,11 +153,10 @@ public class Aplicacion {
 		notificarObservadoresNuevoGrafo();
 	}
 
-	public void ejecutarStress(int cantidadInstancias, int cantidadVertices,
-			EjecutorStressBacktracking.ObservadorProgreso observador) {
+	public void ejecutarStress(EjecutorStressBacktracking.ObservadorProgreso observador) {
 		_cancelado.set(false);
 
-		new EjecutorStressBacktracking(cantidadInstancias, cantidadVertices).ejecutar(_cancelado, observador);
+		new EjecutorStressBacktracking(TAMANIO_INICIAL_STRESS).ejecutar(_cancelado, observador);
 	}
 
 	public void detenerEjecucion() {

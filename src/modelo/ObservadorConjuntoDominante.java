@@ -2,7 +2,7 @@ package modelo;
 
 public interface ObservadorConjuntoDominante {
 
-	public void notificarNuevoGrafo(Aplicacion aplicacion);
+	public void notificarNuevoGrafo();
 
-	public void notificarSolucion(Aplicacion aplicacion);
+	public void notificarSolucion();
 }

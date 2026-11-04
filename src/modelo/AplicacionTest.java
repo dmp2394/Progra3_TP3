@@ -1,7 +1,6 @@
 package modelo;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -42,15 +41,13 @@ public class AplicacionTest {
             Aplicacion aplicacion = new Aplicacion();
             aplicacion.registrar(new ObservadorConjuntoDominante() {
                 @Override
-                public void notificarNuevoGrafo(Aplicacion origen) {
+                public void notificarNuevoGrafo() {
                     _notificacionesGrafo++;
-                    assertSame(aplicacion, origen);
                 }
 
                 @Override
-                public void notificarSolucion(Aplicacion origen) {
+                public void notificarSolucion() {
                     _notificacionesSolucion++;
-                    assertSame(aplicacion, origen);
                 }
             });
 
@@ -346,12 +343,12 @@ public class AplicacionTest {
         private int _notificacionesSolucion;
 
         @Override
-        public void notificarNuevoGrafo(Aplicacion aplicacion) {
+        public void notificarNuevoGrafo() {
             _notificacionesGrafo++;
         }
 
         @Override
-        public void notificarSolucion(Aplicacion aplicacion) {
+        public void notificarSolucion() {
             _notificacionesSolucion++;
         }
     }

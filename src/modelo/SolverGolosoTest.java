@@ -77,7 +77,7 @@ public class SolverGolosoTest {
 
 		SolverGoloso solver = new SolverGoloso(grafo);
 
-		assertEquals(1, solver.aporte(1, conjunto(1, 2)));
+		assertEquals(1, solver.calcularAporte(1, conjunto(1, 2)));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

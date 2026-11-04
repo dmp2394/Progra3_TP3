@@ -41,9 +41,8 @@ public class ControladorPrincipal {
 		return _aplicacion.compararAlgoritmos();
 	}
 
-	public void ejecutarStress(int cantidadInstancias, int cantidadVertices,
-			EjecutorStressBacktracking.ObservadorProgreso observador) {
-		_aplicacion.ejecutarStress(cantidadInstancias, cantidadVertices, observador);
+	public void ejecutarStress(EjecutorStressBacktracking.ObservadorProgreso observador) {
+		_aplicacion.ejecutarStress(observador);
 	}
 
 	public void detenerEjecucion() {
