@@ -24,7 +24,6 @@ public class ResultadoStress {
 
 	public int obtenerNumeroInstancia() { return _numeroInstancia; }
 	public int obtenerCantidadVertices() { return _cantidadVertices; }
-	public int obtenerCantidadAristas() { return _cantidadAristas; }
 	public long obtenerTiempoGolosoNano() { return _tiempoGolosoNano; }
 	public long obtenerTiempoBacktrackingNano() { return _tiempoBacktrackingNano; }
 	public int obtenerTamanioGoloso() { return _tamanioGoloso; }

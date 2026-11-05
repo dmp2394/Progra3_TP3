@@ -8,26 +8,19 @@ import java.awt.Window;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JViewport;
-import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
 
-// Modo claro / oscuro compartido por todas las ventanas.
+// Modo claro / oscuro de la aplicación.
 public final class Tema {
 
 	private static final String PROPIEDAD_BOTON_TEMA = "botonTema";
 
-	// Mismo tamaño del botón de modo oscuro en todas las ventanas.
 	private static final Dimension TAMANIO_BOTON_TEMA = new Dimension(60, 30);
 
 	private static final Color TEXTO_CLARO = new Color(30, 35, 40);
@@ -37,8 +30,6 @@ public final class Tema {
 	private static final Color TEXTO_OSCURO = new Color(235, 237, 240);
 	private static final Color CONTROL_OSCURO = new Color(55, 58, 64);
 	private static final Color BORDE_BOTON_OSCURO = new Color(115, 125, 135);
-
-	private static final Color FONDO_SELECCION_LISTA = new Color(75, 105, 145);
 
 	private static boolean _oscuro;
 
@@ -66,6 +57,26 @@ public final class Tema {
 		boton.setBorderPainted(true);
 	}
 
+	private static void actualizarBoton(JToggleButton boton) {
+		boton.setSelected(_oscuro);
+		boton.setText(_oscuro ? "☀️  Modo claro" : "🌙  Modo oscuro");
+		boton.setBackground(fondoControl());
+		boton.setForeground(texto());
+
+		Color colorBorde = _oscuro ? BORDE_BOTON_OSCURO : BORDE_BOTON_CLARO;
+
+		boton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(colorBorde),
+				BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+	}
+
+	private static Color fondoControl() {
+		return _oscuro ? CONTROL_OSCURO : CONTROL_CLARO;
+	}
+
+	private static Color texto() {
+		return _oscuro ? TEXTO_OSCURO : TEXTO_CLARO;
+	}
+
 	private static void cambiarTema(boolean activarOscuro) {
 		_oscuro = activarOscuro;
 
@@ -78,7 +89,6 @@ public final class Tema {
 
 	public static void aplicar(Component componente) {
 		aplicarColores(componente);
-		aplicarDetallesSegunTipo(componente);
 		aplicarAHijos(componente);
 
 		if (esBotonTema(componente)) {
@@ -99,43 +109,9 @@ public final class Tema {
 		}
 	}
 
-	private static void actualizarBoton(JToggleButton boton) {
-		boton.setSelected(_oscuro);
-		boton.setText(_oscuro ? "☀️  Modo claro" : "🌙  Modo oscuro");
-		boton.setBackground(fondoControl());
-		boton.setForeground(texto());
-
-		Color colorBorde = _oscuro ? BORDE_BOTON_OSCURO : BORDE_BOTON_CLARO;
-
-		boton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(colorBorde),
-				BorderFactory.createEmptyBorder(5, 10, 5, 10)));
-	}
-
 	private static boolean usaFondoDeControl(Component componente) {
 		return componente instanceof JPanel || componente instanceof JScrollPane || componente instanceof JViewport
-				|| componente instanceof JTextField || componente instanceof JComboBox<?>
-				|| componente instanceof JSpinner || componente instanceof JTable || componente instanceof JList<?>
-				|| componente instanceof JTextArea
-				|| componente instanceof AbstractButton;
-	}
-
-	private static Color fondoControl() {
-		return _oscuro ? CONTROL_OSCURO : CONTROL_CLARO;
-	}
-
-	private static void aplicarDetallesSegunTipo(Component componente) {
-		if (componente instanceof JPanel panel && panel.getBorder() instanceof TitledBorder borde) {
-			borde.setTitleColor(texto());
-		}
-
-		if (componente instanceof JTable tabla) {
-			tabla.setGridColor(texto());
-		}
-
-		if (componente instanceof JList<?> lista) {
-			lista.setSelectionBackground(FONDO_SELECCION_LISTA);
-			lista.setSelectionForeground(Color.WHITE);
-		}
+				|| componente instanceof JTextArea || componente instanceof AbstractButton;
 	}
 
 	private static void aplicarAHijos(Component componente) {
@@ -146,16 +122,12 @@ public final class Tema {
 		}
 	}
 
-	private static Color texto() {
-		return _oscuro ? TEXTO_OSCURO : TEXTO_CLARO;
+	private static boolean esBotonTema(Component componente) {
+		return componente instanceof JToggleButton boton
+				&& Boolean.TRUE.equals(boton.getClientProperty(PROPIEDAD_BOTON_TEMA));
 	}
 
 	public static boolean esOscuro() {
 		return _oscuro;
-	}
-
-	private static boolean esBotonTema(Component componente) {
-		return componente instanceof JToggleButton boton
-				&& Boolean.TRUE.equals(boton.getClientProperty(PROPIEDAD_BOTON_TEMA));
 	}
 }

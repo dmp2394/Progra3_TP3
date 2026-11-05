@@ -2,9 +2,9 @@ package modelo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static modelo.Verificaciones.conjunto;
+import static modelo.Verificaciones.verificarDominacion;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
@@ -83,29 +83,5 @@ public class SolverGolosoTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void rechazaGrafoNulo() {
 		new SolverGoloso(null);
-	}
-
-	private Set<Integer> conjunto(Integer... vertices) {
-		return new HashSet<>(Arrays.asList(vertices));
-	}
-
-	private void verificarDominacion(Grafo<Integer> grafo, Set<Integer> solucion) {
-
-		for (Integer elegido : solucion) {
-			assertTrue("La solución contiene un vértice ajeno al grafo.", grafo.existeVertice(elegido));
-		}
-
-		for (Integer vertice : grafo.obtenerVertices()) {
-			boolean cubierto = solucion.contains(vertice);
-
-			for (Integer vecino : grafo.obtenerVecinos(vertice)) {
-				if (solucion.contains(vecino)) {
-					cubierto = true;
-					break;
-				}
-			}
-
-			assertTrue("El vértice " + vertice + " no quedó dominado.", cubierto);
-		}
 	}
 }

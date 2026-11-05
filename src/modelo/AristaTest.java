@@ -18,11 +18,10 @@ public class AristaTest {
 	private static Integer _extremo3 = 3;
 	private static Integer _extremo4 = 4;
 
-	static Arista<Integer> _arista12YPeso100 = new Arista<>(_extremo1, _extremo2);
-	static Arista<Integer> _arista34YPeso100 = new Arista<>(_extremo3, _extremo4);
-	static Arista<Integer> _arista34YPeso50 = new Arista<>(_extremo3, _extremo4);
-	static Arista<Integer> _otraArista12YPeso100 = new Arista<>(_extremo1, _extremo2);
-	static Arista<Integer> _arista12YPeso100AlReves = new Arista<>(_extremo2, _extremo1);
+	static Arista<Integer> _arista12 = new Arista<>(_extremo1, _extremo2);
+	static Arista<Integer> _arista34 = new Arista<>(_extremo3, _extremo4);
+	static Arista<Integer> _otraArista12 = new Arista<>(_extremo1, _extremo2);
+	static Arista<Integer> _arista12AlReves = new Arista<>(_extremo2, _extremo1);
 
 	public static class ConstructorExcepcionesYCasosBorde {
 
@@ -52,12 +51,12 @@ public class AristaTest {
 
 		@Test
 		public void obtenerExtremo1Test() {
-			assertEquals(_extremo1, _arista12YPeso100.obtenerExtremo1());
+			assertEquals(_extremo1, _arista12.obtenerExtremo1());
 		}
 
 		@Test
 		public void obtenerExtremo2Test() {
-			assertEquals(_extremo2, _arista12YPeso100.obtenerExtremo2());
+			assertEquals(_extremo2, _arista12.obtenerExtremo2());
 		}
 	}
 
@@ -65,26 +64,21 @@ public class AristaTest {
 
 		@Test
 		public void equalsNuloTest() {
-			assertFalse(_arista12YPeso100.equals(null));
+			assertFalse(_arista12.equals(null));
 		}
 
 		@Test
 		public void equalsMismoObjetoTest() {
-			assertTrue(_arista12YPeso100.equals(_arista12YPeso100));
+			assertTrue(_arista12.equals(_arista12));
 		}
 
 		@Test
 		public void equalsSimetricoTest() {
 
-			boolean simetrico = _arista12YPeso100.equals(_arista12YPeso100AlReves)
-					&& _arista12YPeso100AlReves.equals(_arista12YPeso100);
+			boolean simetrico = _arista12.equals(_arista12AlReves)
+					&& _arista12AlReves.equals(_arista12);
 
 			assertTrue(simetrico);
-		}
-
-		@Test
-		public void equalsMismosExtremosDistintoPesoTest() {
-			assertTrue(_arista34YPeso100.equals(_arista34YPeso50));
 		}
 	}
 
@@ -93,12 +87,12 @@ public class AristaTest {
 		@Test
 		public void equalsMismosExtremosTest() {
 
-			assertTrue(_arista12YPeso100.equals(_otraArista12YPeso100));
+			assertTrue(_arista12.equals(_otraArista12));
 		}
 
 		@Test
 		public void equalsDistintosExtremosTest() {
-			assertFalse(_arista12YPeso100.equals(_arista34YPeso100));
+			assertFalse(_arista12.equals(_arista34));
 		}
 	}
 

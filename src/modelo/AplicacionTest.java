@@ -51,7 +51,7 @@ public class AplicacionTest {
                 }
             });
 
-            aplicacion.agregarVertice(1);
+            aplicacion.cargarGrafo(Arrays.asList(1), Collections.emptyList());
             aplicacion.resolver();
 
             assertEquals(1, _notificacionesGrafo);
@@ -66,7 +66,7 @@ public class AplicacionTest {
             aplicacion.registrar(primerObservador);
             aplicacion.registrar(segundoObservador);
 
-            aplicacion.agregarVertice(1);
+            aplicacion.cargarGrafo(Arrays.asList(1), Collections.emptyList());
             aplicacion.resolver();
 
             assertEquals(1, primerObservador._notificacionesGrafo);
@@ -76,61 +76,7 @@ public class AplicacionTest {
         }
     }
 
-    public static class ModificarGrafoTest {
-
-        @Test
-        public void agregarVerticeActualizaElEstado() {
-            Aplicacion aplicacion = new Aplicacion();
-
-            aplicacion.agregarVertice(1);
-
-            assertEquals(Collections.singletonList(1), aplicacion.obtenerVertices());
-        }
-
-        @Test(expected = IllegalArgumentException.class)
-        public void agregarVerticeNuloPropagaLaExcepcion() {
-            new Aplicacion().agregarVertice(null);
-        }
-
-        @Test(expected = IllegalArgumentException.class)
-        public void agregarVerticeRepetidoPropagaLaExcepcion() {
-            Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(1);
-        }
-
-        @Test
-        public void agregarAristaActualizaElEstado() {
-            Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(2);
-            Arista<Integer> arista = new Arista<>(1, 2);
-
-            aplicacion.agregarArista(arista);
-
-            assertEquals(Collections.singletonList(arista), aplicacion.obtenerAristas());
-        }
-
-        @Test(expected = IllegalArgumentException.class)
-        public void agregarAristaNulaPropagaLaExcepcion() {
-            new Aplicacion().agregarArista(null);
-        }
-
-        @Test(expected = IllegalArgumentException.class)
-        public void agregarAristaConVerticeInexistentePropagaLaExcepcion() {
-            Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarArista(new Arista<>(1, 2));
-        }
-
-        @Test(expected = IllegalArgumentException.class)
-        public void agregarAristaRepetidaPropagaLaExcepcion() {
-            Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(2);
-            aplicacion.agregarArista(new Arista<>(1, 2));
-            aplicacion.agregarArista(new Arista<>(2, 1));
-        }
+    public static class CargarGrafoTest {
 
         @Test
         public void cargarGrafoActualizaVerticesAristasYNotifica() {
@@ -166,10 +112,25 @@ public class AplicacionTest {
             	Collections.singletonList(null));
         }
 
+        @Test(expected = IllegalArgumentException.class)
+        public void cargarGrafoConVerticeRepetidoPropagaLaExcepcion() {
+            new Aplicacion().cargarGrafo(Arrays.asList(1, 1), Collections.emptyList());
+        }
+
+        @Test(expected = IllegalArgumentException.class)
+        public void cargarGrafoConAristaAVerticeInexistentePropagaLaExcepcion() {
+            new Aplicacion().cargarGrafo(Arrays.asList(1), Collections.singletonList(new Arista<>(1, 2)));
+        }
+
+        @Test(expected = IllegalArgumentException.class)
+        public void cargarGrafoConAristaRepetidaPropagaLaExcepcion() {
+            new Aplicacion().cargarGrafo(Arrays.asList(1, 2), Arrays.asList(new Arista<>(1, 2), new Arista<>(2, 1)));
+        }
+
         @Test
         public void cargarGrafoReemplazaLaSolucionAnterior() {
             Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
+            aplicacion.cargarGrafo(Arrays.asList(1), Collections.emptyList());
             aplicacion.resolver();
             assertEquals(Collections.singleton(1), aplicacion.obtenerSolucion());
 
@@ -179,66 +140,19 @@ public class AplicacionTest {
         }
 
         @Test
-        public void agregarVerticeDespuesDeResolverLimpiaLaSolucionAnterior() {
-            Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.resolver();
-
-            aplicacion.agregarVertice(2);
-
-            assertTrue(aplicacion.obtenerSolucion().isEmpty());
-        }
-
-        @Test
-        public void agregarAristaDespuesDeResolverLimpiaLaSolucionAnterior() {
-            Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(2);
-            aplicacion.resolver();
-
-            aplicacion.agregarArista(new Arista<>(1, 2));
-
-            assertTrue(aplicacion.obtenerSolucion().isEmpty());
-        }
-
-        @Test
-        public void operacionFallidaNoModificaGrafoNiNotifica() {
+        public void cargaFallidaNoModificaGrafoNiNotifica() {
             Aplicacion aplicacion = new Aplicacion();
             ContadorObservador observador = new ContadorObservador();
             aplicacion.registrar(observador);
+            aplicacion.cargarGrafo(Arrays.asList(1), Collections.emptyList());
 
             try {
-            	aplicacion.agregarVertice(1);
-            	aplicacion.agregarVertice(1);
+            	aplicacion.cargarGrafo(Arrays.asList(2, 2), Collections.emptyList());
             } catch (IllegalArgumentException excepcion) {
-            	// La segunda operación falla porque el vértice ya existe.
+            	// La segunda carga falla porque el vértice 2 está repetido.
             }
 
             assertEquals(Collections.singletonList(1), aplicacion.obtenerVertices());
-            assertEquals(1, observador._notificacionesGrafo);
-        }
-
-        @Test
-        public void borrarGrafoActualLimpiaGrafoYSolucion() {
-            Aplicacion aplicacion = new Aplicacion();
-            aplicacion.cargarGrafo(Arrays.asList(1), Collections.emptyList());
-            aplicacion.resolver();
-
-            aplicacion.borrarGrafoActual();
-
-            assertTrue(aplicacion.obtenerVertices().isEmpty());
-            assertTrue(aplicacion.obtenerAristas().isEmpty());
-            assertTrue(aplicacion.obtenerSolucion().isEmpty());
-        }
-
-        @Test
-        public void borrarGrafoActualNotificaLosObservadores() {
-            Aplicacion aplicacion = new Aplicacion();
-            ContadorObservador observador = new ContadorObservador();
-            aplicacion.registrar(observador);
-
-            aplicacion.borrarGrafoActual();
-
             assertEquals(1, observador._notificacionesGrafo);
         }
     }
@@ -257,9 +171,7 @@ public class AplicacionTest {
         @Test
         public void resolverCalculaLaSolucion() {
             Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(2);
-            aplicacion.agregarArista(new Arista<>(1, 2));
+            aplicacion.cargarGrafo(Arrays.asList(1, 2), Collections.singletonList(new Arista<>(1, 2)));
 
             aplicacion.resolver();
 
@@ -269,11 +181,7 @@ public class AplicacionTest {
         @Test
         public void resolverBacktrackingCalculaLaSolucionMinima() {
             Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(2);
-            aplicacion.agregarVertice(3);
-            aplicacion.agregarArista(new Arista<>(1, 2));
-            aplicacion.agregarArista(new Arista<>(1, 3));
+            aplicacion.cargarGrafo(Arrays.asList(1, 2, 3), Arrays.asList(new Arista<>(1, 2), new Arista<>(1, 3)));
 
             aplicacion.resolverBacktracking();
 
@@ -283,11 +191,10 @@ public class AplicacionTest {
         @Test
         public void resolverDeNuevoDespuesDeCambiarElGrafoCalculaLaNuevaSolucion() {
             Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(2);
+            aplicacion.cargarGrafo(Arrays.asList(1, 2), Collections.emptyList());
             aplicacion.resolver();
 
-            aplicacion.agregarArista(new Arista<>(1, 2));
+            aplicacion.cargarGrafo(Arrays.asList(1, 2), Collections.singletonList(new Arista<>(1, 2)));
             aplicacion.resolver();
 
             assertEquals(1, aplicacion.obtenerSolucion().size());
@@ -309,7 +216,7 @@ public class AplicacionTest {
         @Test(expected = UnsupportedOperationException.class)
         public void obtenerSolucionDevuelveUnaVistaInmodificable() {
             Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
+            aplicacion.cargarGrafo(Arrays.asList(1), Collections.emptyList());
             aplicacion.resolver();
 
             aplicacion.obtenerSolucion().add(2);
@@ -321,7 +228,7 @@ public class AplicacionTest {
         @Test(expected = UnsupportedOperationException.class)
         public void obtenerVerticesDevuelveUnaVistaInmodificable() {
             Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
+            aplicacion.cargarGrafo(Arrays.asList(1), Collections.emptyList());
 
             aplicacion.obtenerVertices().add(2);
         }
@@ -329,9 +236,7 @@ public class AplicacionTest {
         @Test(expected = UnsupportedOperationException.class)
         public void obtenerAristasDevuelveUnaVistaInmodificable() {
             Aplicacion aplicacion = new Aplicacion();
-            aplicacion.agregarVertice(1);
-            aplicacion.agregarVertice(2);
-            aplicacion.agregarArista(new Arista<>(1, 2));
+            aplicacion.cargarGrafo(Arrays.asList(1, 2), Collections.singletonList(new Arista<>(1, 2)));
 
             aplicacion.obtenerAristas().clear();
         }

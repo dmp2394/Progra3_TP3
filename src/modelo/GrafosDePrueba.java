@@ -39,6 +39,20 @@ public class GrafosDePrueba {
 		return grafo;
 	}
 
+	// 4 - 3 - 1 - 5 - 2
+	// El goloso desempata por el vértice más chico y elige primero al 1 (centro),
+	// y después necesita dos más. El mínimo es de dos vértices, por ejemplo {3, 5}.
+	public static Grafo<Integer> caminoDondeElGolosoNoEsOptimo() {
+		Grafo<Integer> grafo = conVertices(5);
+
+		grafo.agregarArista(4, 3);
+		grafo.agregarArista(3, 1);
+		grafo.agregarArista(1, 5);
+		grafo.agregarArista(5, 2);
+
+		return grafo;
+	}
+
 	// Componentes 1-2 y 3-4, y el vértice 5 aislado.
 	public static Grafo<Integer> desconectado() {
 		Grafo<Integer> grafo = conVertices(5);

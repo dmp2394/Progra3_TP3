@@ -71,13 +71,6 @@ public class SolverBacktracking {
 		return !_solucion.isEmpty() && _candidatos.size() >= _solucion.size();
 	}
 
-	private void guardarSiEsMejorSolucion() {
-		if (_solucion.isEmpty() || _candidatos.size() < _solucion.size()) {
-			_solucion.clear();
-			_solucion.addAll(_candidatos);
-		}
-	}
-
 	private boolean esConjuntoDominante(List<Integer> candidatos) {
 		Set<Integer> dominados = new HashSet<>(candidatos);
 
@@ -86,5 +79,12 @@ public class SolverBacktracking {
 		}
 
 		return dominados.containsAll(_instancia.obtenerVertices());
+	}
+
+	private void guardarSiEsMejorSolucion() {
+		if (_solucion.isEmpty() || _candidatos.size() < _solucion.size()) {
+			_solucion.clear();
+			_solucion.addAll(_candidatos);
+		}
 	}
 }

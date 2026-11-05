@@ -83,6 +83,16 @@ public class Grafo<V> {
         return vecinos;
     }
 
+    public boolean existeVertice(V vertice) {
+        if (vertice == null) {
+            throw new IllegalArgumentException(
+                "Error: El vértice no puede ser nulo."
+            );
+        }
+
+        return _listaDeAristasIncidentes.containsKey(vertice);
+    }
+
     public ArrayList<Arista<V>> obtenerAristas() {
         return new ArrayList<>(_aristas);
     }
@@ -146,16 +156,6 @@ public class Grafo<V> {
         }
 
         _listaDeAristasIncidentes.remove(vertice);
-    }
-
-    public boolean existeVertice(V vertice) {
-        if (vertice == null) {
-            throw new IllegalArgumentException(
-                "Error: El vértice no puede ser nulo."
-            );
-        }
-
-        return _listaDeAristasIncidentes.containsKey(vertice);
     }
 
     public void eliminarArista(V vertice1, V vertice2) {

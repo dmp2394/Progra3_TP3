@@ -51,20 +51,8 @@ public class VisualizadorGrafo {
 		agregarAristas(aristas);
 	}
 
-	public void limpiar() {
-		_grafo.clear();
-		aplicarTema();
-	}
-
 	public void aplicarTema() {
 		_grafo.setAttribute("ui.stylesheet", Tema.esOscuro() ? ESTILO_OSCURO : ESTILO_CLARO);
-	}
-
-	public void pintarSolucion(Set<Integer> solucion) {
-		for (Integer vertice : solucion) {
-			Node nodo = _grafo.getNode(String.valueOf(vertice));
-			nodo.setAttribute("ui.style", "fill-color: " + COLOR_SOLUCION + ";");
-		}
 	}
 
 	private void agregarVertices(List<Integer> vertices) {
@@ -80,6 +68,18 @@ public class VisualizadorGrafo {
 			String extremo2 = String.valueOf(arista.obtenerExtremo2());
 			String id = extremo1 + "-" + extremo2;
 			_grafo.addEdge(id, extremo1, extremo2);
+		}
+	}
+
+	public void limpiar() {
+		_grafo.clear();
+		aplicarTema();
+	}
+
+	public void pintarSolucion(Set<Integer> solucion) {
+		for (Integer vertice : solucion) {
+			Node nodo = _grafo.getNode(String.valueOf(vertice));
+			nodo.setAttribute("ui.style", "fill-color: " + COLOR_SOLUCION + ";");
 		}
 	}
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 public class GrafoJSON {
 
@@ -24,6 +25,8 @@ public class GrafoJSON {
 			return gson.fromJson(lector, GrafoJSON.class);
 		} catch (IOException e) {
 			throw new IllegalArgumentException("No se pudo leer el archivo JSON: " + archivo, e);
+		} catch (JsonParseException e) {
+			throw new IllegalArgumentException("El archivo no tiene un formato JSON de grafo válido.", e);
 		}
 	}
 

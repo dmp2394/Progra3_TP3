@@ -14,6 +14,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -40,7 +41,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private JButton _botonDetener;
 	private JButton _botonStress;
 	private JButton _botonComparar;
-	private JButton _botonReset;
+	private JButton _botonLimpiar;
 	private JToggleButton _botonTema;
 	private SwingWorker<?, ?> _trabajoActual;
 	private String _ultimoAlgoritmo;
@@ -49,6 +50,11 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	private String _resolviendoTextoBase = "Resolviendo";
 	private String _resolviendoTextoComparacion = "Comparando";
 	private int _intervaloResolviendo = 421;
+	private JButton _botonResolverBacktracking;
+	private JButton _botonResolverGoloso;
+
+	private static final int PIXELES_ANCHO = 1366;
+	private static final int PIXELES_ALTO = 768;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -84,12 +90,10 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		panelContenido.add(crearBotonComparar());
 		panelContenido.add(crearBotonStress());
 		panelContenido.add(crearBotonDetener());
-		panelContenido.add(crearBotonReset());
+		panelContenido.add(crearBotonLimpiar());
 		panelContenido.add(crearVisualizacionGrafo());
 		panelContenido.add(crearPanelResultados());
-		_etiquetaEstadisticas = new JLabel("Grafo: 0 vértices, 0 aristas");
-		_etiquetaEstadisticas.setBounds(10, 655, 780, 24);
-		panelContenido.add(_etiquetaEstadisticas);
+		panelContenido.add(crearEtiquetaEstadisticasEnPie());
 		panelContenido.add(crearBotonTema());
 
 		Tema.aplicar(_frame);
@@ -98,8 +102,8 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private void configurarVentana() {
 		_frame.setTitle("Bienvenido - Conjunto Dominante Mínimo");
-		_frame.setSize(1024, 768);
-		_frame.setResizable(true);
+		_frame.setSize(PIXELES_ANCHO, PIXELES_ALTO);
+		_frame.setResizable(false);
 		_frame.setLocationRelativeTo(null);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -126,17 +130,27 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 		if (chooser.showOpenDialog(_frame) == JFileChooser.APPROVE_OPTION) {
 			File archivo = chooser.getSelectedFile();
-			_controlador.cargarGrafoDesdeJSON(archivo.getAbsolutePath());
+			try {
+				_controlador.cargarGrafoDesdeJSON(archivo.getAbsolutePath());
+				_botonResolverGoloso.setEnabled(true);
+				_botonResolverBacktracking.setEnabled(true);
+				_botonComparar.setEnabled(true);
+				_botonLimpiar.setEnabled(true);
+				_areaResultados.setText(
+						"Resultados\n\nElija un algoritmo, compare Goloso y Backtracking o ejecute un test de Stress.");
+			} catch (IllegalArgumentException e) {
+				JOptionPane.showMessageDialog(_frame, "No se pudo cargar el grafo:\n" + e.getMessage(),
+						"Error al cargar el archivo", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	}
 
 	private JButton crearBotonResolverGoloso() {
-		JButton btnResolver = new JButton("Resolver goloso");
-		int ancho = 180;
-		int x = 175;
-		btnResolver.setBounds(x, 10, ancho, 30);
-		btnResolver.addActionListener(e -> resolverGoloso());
-		return btnResolver;
+		_botonResolverGoloso = new JButton("Resolver goloso");
+		_botonResolverGoloso.setBounds(208, 10, 180, 30);
+		_botonResolverGoloso.addActionListener(e -> resolverGoloso());
+		_botonResolverGoloso.setEnabled(false);
+		return _botonResolverGoloso;
 	}
 
 	private void resolverGoloso() {
@@ -145,154 +159,16 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_controlador.resolver();
 	}
 
+	private void mostrarGrafo() {
+		_visualizadorGrafo.mostrar(_aplicacion.obtenerVertices(), _aplicacion.obtenerAristas());
+	}
+
 	private JButton crearBotonResolverBacktracking() {
-		JButton btnResolver = new JButton("Resolver backtracking");
-		int ancho = 180;
-		int x = 360;
-		btnResolver.setBounds(x, 10, ancho, 30);
-		btnResolver.addActionListener(e -> resolverBacktracking());
-		return btnResolver;
-	}
-
-	private JButton crearBotonComparar() {
-		_botonComparar = new JButton("Comparar algoritmos");
-		_botonComparar.setBounds(545, 10, 155, 30);
-		_botonComparar.addActionListener(e -> compararAlgoritmos());
-		return _botonComparar;
-	}
-
-	private JButton crearBotonStress() {
-		_botonStress = new JButton("Stress");
-		_botonStress.setBounds(705, 10, 105, 30);
-		_botonStress.addActionListener(e -> ejecutarStress());
-		return _botonStress;
-	}
-
-	private JButton crearBotonDetener() {
-		_botonDetener = new JButton("Detener");
-		_botonDetener.setBounds(815, 10, 90, 30);
-		_botonDetener.setEnabled(false);
-		_botonDetener.addActionListener(e -> detenerEjecucion());
-		return _botonDetener;
-	}
-
-	private void detenerEjecucion() {
-		_controlador.detenerEjecucion();
-		_etiquetaEstadisticas.setText("");
-	}
-
-	private JButton crearBotonReset() {
-		_botonReset = new JButton("Limpiar");
-		_botonReset.setBounds(910, 10, 85, 30);
-		_botonReset.addActionListener(e -> limpiarSolucion());
-		return _botonReset;
-	}
-
-	private JToggleButton crearBotonTema() {
-		_botonTema = Tema.crearBotonTema();
-		_botonTema.setBounds(835, 620, 164, 32);
-		_botonTema.setText("🌙 Claro");
-		_botonTema.addActionListener(e -> SwingUtilities.invokeLater(this::aplicarTemaAGrafo));
-		return _botonTema;
-	}
-
-	private void limpiarSolucion() {
-		if (_trabajoActual != null && !_trabajoActual.isDone()) {
-			return;
-		}
-		_controlador.limpiarSolucion();
-		mostrarGrafo();
-		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas - solución limpiada",
-				_aplicacion.obtenerVertices().size(), _aplicacion.obtenerAristas().size()));
-	}
-
-	private void compararAlgoritmos() {
-		if (_trabajoActual != null && !_trabajoActual.isDone()) {
-			return;
-		}
-		_botonComparar.setEnabled(false);
-		mostrarGrafo();
-		_botonDetener.setEnabled(true);
-		iniciarAnimacionResolviendo(_resolviendoTextoComparacion);
-
-		SwingWorker<ResultadoComparacion, Void> worker = new SwingWorker<ResultadoComparacion, Void>() {
-			@Override
-			protected ResultadoComparacion doInBackground() {
-				return _controlador.compararAlgoritmos();
-			}
-
-			@Override
-			protected void done() {
-				detenerAnimacionResolviendo();
-				_botonComparar.setEnabled(true);
-				_botonDetener.setEnabled(false);
-				try {
-					ResultadoComparacion resultado = get();
-					if (_controlador.fueCancelado()) {
-						_areaResultados.setText("Cancelado.");
-						return;
-					}
-					pintarSolucionSobreGrafo(resultado.obtenerSolucionBacktracking());
-					_etiquetaEstadisticas
-							.setText(resultado.obtenerResumen() + " | En el grafo: solución del backtracking");
-					mostrarComparacion(resultado);
-				} catch (Exception ex) {
-					if (_controlador.fueCancelado()) {
-						_areaResultados.setText("Comparación cancelada.");
-					} else {
-						_etiquetaEstadisticas.setText("Error al comparar: " + ex.getMessage());
-					}
-				}
-			}
-		};
-
-		_trabajoActual = worker;
-		worker.execute();
-	}
-
-	private void ejecutarStress() {
-		if (_trabajoActual != null && !_trabajoActual.isDone()) {
-			return;
-		}
-
-		_botonStress.setEnabled(false);
-		_botonDetener.setEnabled(true);
-		_botonStress.setText("Ejecutando...");
-		_visualizadorGrafo.limpiar();
-		_areaResultados.setText("STRESS\n\n");
-		_etiquetaEstadisticas.setText("Stress iniciado: tamaño creciente desde "
-				+ Aplicacion.TAMANIO_INICIAL_STRESS + " vértices. Presione Detener para cortar.");
-
-		SwingWorker<Void, ResultadoStress> worker = new SwingWorker<Void, ResultadoStress>() {
-			@Override
-			protected Void doInBackground() {
-				_controlador.ejecutarStress(resultado -> publish(resultado));
-				return null;
-			}
-
-			@Override
-			protected void process(List<ResultadoStress> resultados) {
-				for (ResultadoStress resultado : resultados) {
-					_areaResultados.append(formatearResultadoStress(resultado));
-				}
-				_areaResultados.setCaretPosition(_areaResultados.getDocument().getLength());
-
-				// Si ya se canceló, la barra de abajo quedó vacía y no se vuelve a escribir.
-				if (!_controlador.fueCancelado()) {
-					ResultadoStress ultimo = resultados.get(resultados.size() - 1);
-					_etiquetaEstadisticas.setText(ultimo.obtenerResumen());
-				}
-			}
-
-			@Override
-			protected void done() {
-				_botonStress.setEnabled(true);
-				_botonDetener.setEnabled(false);
-				_botonStress.setText("Stress");
-			}
-		};
-		_trabajoActual = worker;
-		worker.execute();
+		_botonResolverBacktracking = new JButton("Resolver backtracking");
+		_botonResolverBacktracking.setBounds(430, 10, 180, 30);
+		_botonResolverBacktracking.addActionListener(e -> resolverBacktracking());
+		_botonResolverBacktracking.setEnabled(false);
+		return _botonResolverBacktracking;
 	}
 
 	private void resolverBacktracking() {
@@ -356,73 +232,60 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		}
 	}
 
-	private JComponent crearVisualizacionGrafo() {
-		_visualizadorGrafo = new VisualizadorGrafo("Grafo");
-
-		JComponent panelGrafo = _visualizadorGrafo.obtenerPanel();
-		panelGrafo.setBounds(10, 50, 790, 600);
-
-		return panelGrafo;
+	private JButton crearBotonComparar() {
+		_botonComparar = new JButton("Comparar algoritmos");
+		_botonComparar.setBounds(660, 10, 155, 30);
+		_botonComparar.addActionListener(e -> compararAlgoritmos());
+		_botonComparar.setEnabled(false);
+		return _botonComparar;
 	}
 
-	@Override
-	public void notificarNuevoGrafo() {
-		mostrarGrafo();
-		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas",
-				_aplicacion.obtenerVertices().size(), _aplicacion.obtenerAristas().size()));
-	}
-
-	private void mostrarGrafo() {
-		_visualizadorGrafo.mostrar(_aplicacion.obtenerVertices(), _aplicacion.obtenerAristas());
-	}
-
-	private void aplicarTemaAGrafo() {
-		if (_visualizadorGrafo == null) {
+	private void compararAlgoritmos() {
+		if (_trabajoActual != null && !_trabajoActual.isDone()) {
 			return;
 		}
+		_botonComparar.setEnabled(false);
+		mostrarGrafo();
+		_botonDetener.setEnabled(true);
+		iniciarAnimacionResolviendo(_resolviendoTextoComparacion);
 
-		_visualizadorGrafo.aplicarTema();
-	}
+		SwingWorker<ResultadoComparacion, Void> worker = new SwingWorker<ResultadoComparacion, Void>() {
+			@Override
+			protected ResultadoComparacion doInBackground() {
+				return _controlador.compararAlgoritmos();
+			}
 
-	@Override
-	public void notificarSolucion() {
-		mostrarSolucionSobreGrafo();
-		mostrarSolucionIndividual(_ultimoAlgoritmo == null ? "Algoritmo" : _ultimoAlgoritmo,
-				_aplicacion.obtenerSolucion());
-	}
+			@Override
+			protected void done() {
+				detenerAnimacionResolviendo();
+				_botonComparar.setEnabled(true);
+				_botonDetener.setEnabled(false);
+				try {
+					ResultadoComparacion resultado = get();
+					if (_controlador.fueCancelado()) {
+						_areaResultados.setText("Cancelado.");
+						return;
+					}
+					pintarSolucionSobreGrafo(resultado.obtenerSolucionBacktracking());
+					_etiquetaEstadisticas
+							.setText(resultado.obtenerResumen() + " | En el grafo: solución del backtracking");
+					mostrarComparacion(resultado);
+				} catch (Exception ex) {
+					if (_controlador.fueCancelado()) {
+						_areaResultados.setText("Comparación cancelada.");
+					} else {
+						_etiquetaEstadisticas.setText("Error al comparar: " + ex.getMessage());
+					}
+				}
+			}
+		};
 
-	private void mostrarSolucionSobreGrafo() {
-		Set<Integer> conjuntoSolucion = _aplicacion.obtenerSolucion();
-		pintarSolucionSobreGrafo(conjuntoSolucion);
+		_trabajoActual = worker;
+		worker.execute();
 	}
 
 	private void pintarSolucionSobreGrafo(Set<Integer> conjuntoSolucion) {
 		_visualizadorGrafo.pintarSolucion(conjuntoSolucion);
-	}
-
-	private JScrollPane crearPanelResultados() {
-		JPanel contenedor = new JPanel(null);
-		_areaResultados = new JTextArea("Resultados\n\nSeleccione un algoritmo o Stress.");
-		_areaResultados.setEditable(false);
-		_areaResultados.setLineWrap(true);
-		_areaResultados.setWrapStyleWord(true);
-		_areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-
-		JScrollPane scroll = new JScrollPane(_areaResultados);
-		scroll.setBounds(822, 50, 190, 565);
-		scroll.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createLineBorder(
-						Tema.esOscuro() ? new java.awt.Color(115, 125, 135) : new java.awt.Color(150, 160, 170)),
-				BorderFactory.createEmptyBorder(4, 4, 4, 4)));
-		contenedor.setBounds(822, 50, 190, 565);
-		contenedor.add(scroll);
-		return scroll;
-	}
-
-	private void mostrarSolucionIndividual(String algoritmo, Set<Integer> solucion) {
-		_areaResultados.setText(algoritmo + "\n" + "Tamaño: " + solucion.size() + "\n" + "Vértices: "
-				+ formatearVertices(solucion) + "\n");
-		_etiquetaEstadisticas.setText(algoritmo + ": " + solucion.size() + " vértices dominantes");
 	}
 
 	private void mostrarComparacion(ResultadoComparacion resultado) {
@@ -437,13 +300,6 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 		_areaResultados.setText(texto.toString());
 	}
 
-	private String formatearResultadoStress(ResultadoStress resultado) {
-		return String.format("#%d: %d vértices\nGoloso: %d - %s\nBacktracking: %d - %s\n\n",
-				resultado.obtenerNumeroInstancia(), resultado.obtenerCantidadVertices(),
-				resultado.obtenerTamanioGoloso(), formatearTiempo(resultado.obtenerTiempoGolosoNano()),
-				resultado.obtenerTamanioBacktracking(), formatearTiempo(resultado.obtenerTiempoBacktrackingNano()));
-	}
-
 	private String formatearVertices(Set<Integer> vertices) {
 		List<Integer> ordenados = new ArrayList<>(vertices);
 		Collections.sort(ordenados);
@@ -455,6 +311,166 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 
 	private String formatearTiempo(long nanoSegundos) {
 		return String.format("%.3f ms", nanoSegundos / 1_000_000.0);
+	}
+
+	private JButton crearBotonStress() {
+		_botonStress = new JButton("Stress");
+		_botonStress.setBounds(870, 10, 123, 30);
+		_botonStress.addActionListener(e -> ejecutarStress());
+		return _botonStress;
+	}
+
+	private void ejecutarStress() {
+		if (_trabajoActual != null && !_trabajoActual.isDone()) {
+			return;
+		}
+
+		_botonStress.setEnabled(false);
+		_botonDetener.setEnabled(true);
+		_botonLimpiar.setEnabled(true);
+		_botonStress.setText("Ejecutando...");
+		_visualizadorGrafo.limpiar();
+		_areaResultados.setText("STRESS\n\n");
+		_etiquetaEstadisticas.setText("Stress iniciado: tamaño creciente desde " + Aplicacion.TAMANIO_INICIAL_STRESS
+				+ " vértices. Presione Detener para cortar.");
+
+		SwingWorker<Void, ResultadoStress> worker = new SwingWorker<Void, ResultadoStress>() {
+			@Override
+			protected Void doInBackground() {
+				_controlador.ejecutarStress(resultado -> publish(resultado));
+				return null;
+			}
+
+			@Override
+			protected void process(List<ResultadoStress> resultados) {
+				for (ResultadoStress resultado : resultados) {
+					_areaResultados.append(formatearResultadoStress(resultado));
+				}
+				_areaResultados.setCaretPosition(_areaResultados.getDocument().getLength());
+
+				// Si ya se canceló, la barra de abajo quedó vacía y no se vuelve a escribir.
+				if (!_controlador.fueCancelado()) {
+					ResultadoStress ultimo = resultados.get(resultados.size() - 1);
+					_etiquetaEstadisticas.setText(ultimo.obtenerResumen());
+				}
+			}
+
+			@Override
+			protected void done() {
+				_botonStress.setEnabled(true);
+				_botonDetener.setEnabled(false);
+				_botonStress.setText("Stress");
+			}
+		};
+		_trabajoActual = worker;
+		worker.execute();
+	}
+
+	private String formatearResultadoStress(ResultadoStress resultado) {
+		return String.format("#%d: %d vértices\nGoloso: %d - %s\nBacktracking: %d - %s\n\n",
+				resultado.obtenerNumeroInstancia(), resultado.obtenerCantidadVertices(),
+				resultado.obtenerTamanioGoloso(), formatearTiempo(resultado.obtenerTiempoGolosoNano()),
+				resultado.obtenerTamanioBacktracking(), formatearTiempo(resultado.obtenerTiempoBacktrackingNano()));
+	}
+
+	private JButton crearBotonDetener() {
+		_botonDetener = new JButton("Detener");
+		_botonDetener.setBounds(1037, 10, 160, 30);
+		_botonDetener.setEnabled(false);
+		_botonDetener.addActionListener(e -> detenerEjecucion());
+		return _botonDetener;
+	}
+
+	private void detenerEjecucion() {
+		_controlador.detenerEjecucion();
+		_etiquetaEstadisticas.setText("");
+	}
+
+	private JButton crearBotonLimpiar() {
+		_botonLimpiar = new JButton("Limpiar");
+		_botonLimpiar.setBounds(1207, 11, 133, 30);
+		_botonLimpiar.setEnabled(false);
+		_botonLimpiar.addActionListener(e -> limpiarSolucion());
+		return _botonLimpiar;
+	}
+
+	private void limpiarSolucion() {
+		if (_trabajoActual != null && !_trabajoActual.isDone()) {
+			return;
+		}
+		_controlador.limpiarSolucion();
+		mostrarGrafo();
+		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas - solución limpiada",
+				_aplicacion.obtenerVertices().size(), _aplicacion.obtenerAristas().size()));
+	}
+
+	private JComponent crearVisualizacionGrafo() {
+		_visualizadorGrafo = new VisualizadorGrafo("Grafo");
+
+		JComponent panelGrafo = _visualizadorGrafo.obtenerPanel();
+		panelGrafo.setBounds(10, 61, 1017, 565);
+
+		return panelGrafo;
+	}
+
+	private JScrollPane crearPanelResultados() {
+
+		JScrollPane scroll = new JScrollPane();
+		scroll.setBounds(1037, 61, 303, 565);
+		scroll.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(
+						Tema.esOscuro() ? new java.awt.Color(115, 125, 135) : new java.awt.Color(150, 160, 170)),
+				BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+		_areaResultados = new JTextArea(
+				"Resultados\n\nCargue un grafo en formato .json o haga un test de Stress entre algoritmo goloso y backtracking.");
+		scroll.setViewportView(_areaResultados);
+		_areaResultados.setEditable(false);
+		_areaResultados.setLineWrap(true);
+		_areaResultados.setWrapStyleWord(true);
+		_areaResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+		return scroll;
+	}
+
+	private JLabel crearEtiquetaEstadisticasEnPie() {
+		_etiquetaEstadisticas = new JLabel("Grafo: 0 vértices, 0 aristas");
+		_etiquetaEstadisticas.setBounds(10, 679, 780, 24);
+		return _etiquetaEstadisticas;
+	}
+
+	private JToggleButton crearBotonTema() {
+		_botonTema = Tema.crearBotonTema();
+		_botonTema.setBounds(1176, 651, 164, 32);
+		_botonTema.addActionListener(e -> SwingUtilities.invokeLater(this::aplicarTemaAGrafo));
+		return _botonTema;
+	}
+
+	private void aplicarTemaAGrafo() {
+		_visualizadorGrafo.aplicarTema();
+	}
+
+	@Override
+	public void notificarNuevoGrafo() {
+		mostrarGrafo();
+		_etiquetaEstadisticas.setText(String.format("Grafo: %d vértices, %d aristas",
+				_aplicacion.obtenerVertices().size(), _aplicacion.obtenerAristas().size()));
+	}
+
+	@Override
+	public void notificarSolucion() {
+		mostrarSolucionSobreGrafo();
+		mostrarSolucionIndividual(_ultimoAlgoritmo == null ? "Algoritmo" : _ultimoAlgoritmo,
+				_aplicacion.obtenerSolucion());
+	}
+
+	private void mostrarSolucionSobreGrafo() {
+		Set<Integer> conjuntoSolucion = _aplicacion.obtenerSolucion();
+		pintarSolucionSobreGrafo(conjuntoSolucion);
+	}
+
+	private void mostrarSolucionIndividual(String algoritmo, Set<Integer> solucion) {
+		_areaResultados.setText(algoritmo + "\n" + "Tamaño: " + solucion.size() + "\n" + "Vértices: "
+				+ formatearVertices(solucion) + "\n");
+		_etiquetaEstadisticas.setText(algoritmo + ": " + solucion.size() + " vértices dominantes");
 	}
 
 }

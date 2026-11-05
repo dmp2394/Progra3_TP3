@@ -10,7 +10,7 @@ public class Arista<V> {
 	public Arista(V extremo1, V extremo2) {
 		if (extremo1 == null || extremo2 == null)
 			throw new IllegalArgumentException(
-					"Error: Extremo1 y Extremo2 no pueden ser null y peso no puede ser 0 o negativo");
+					"Error: Extremo1 y Extremo2 no pueden ser null.");
 
 		if (extremo1.equals(extremo2))
 			throw new IllegalArgumentException("Error: No se permiten loops.");

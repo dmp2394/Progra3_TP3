@@ -2,8 +2,12 @@ package modelo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static modelo.Verificaciones.conjunto;
+import static modelo.Verificaciones.verificarDominacion;
 
 import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
@@ -24,5 +28,18 @@ public class ComparacionAlgoritmosTest {
 		assertTrue(resultado.obtenerTiempoGolosoNano() >= 0);
 		assertTrue(resultado.obtenerTiempoBacktrackingNano() >= 0);
 		assertTrue(resultado.obtenerResumen().contains("Backtracking"));
+	}
+
+	@Test
+	public void backtrackingEncuentraElMinimoDondeElGolosoNoLoLogra() {
+		Grafo<Integer> grafo = GrafosDePrueba.caminoDondeElGolosoNoEsOptimo();
+
+		Set<Integer> solucionGolosa = new SolverGoloso(grafo).resolver();
+		Set<Integer> solucionBacktracking = new SolverBacktracking(grafo).resolver(new AtomicBoolean(false));
+
+		assertEquals(conjunto(1, 2, 3), solucionGolosa);
+		assertEquals(2, solucionBacktracking.size());
+		verificarDominacion(grafo, solucionGolosa);
+		verificarDominacion(grafo, solucionBacktracking);
 	}
 }

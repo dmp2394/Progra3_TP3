@@ -31,24 +31,6 @@ public class Aplicacion {
 		_observadores.add(observador);
 	}
 
-	public void agregarVertice(Integer vertice) {
-		_grafo.agregarVertice(vertice);
-		_solucion = new HashSet<>();
-
-		notificarObservadoresNuevoGrafo();
-	}
-
-	public void agregarArista(Arista<Integer> arista) {
-		if (arista == null) {
-			throw new IllegalArgumentException("La arista no puede ser null.");
-		}
-
-		_grafo.agregarArista(arista.obtenerExtremo1(), arista.obtenerExtremo2());
-		_solucion = new HashSet<>();
-
-		notificarObservadoresNuevoGrafo();
-	}
-
 	public void cargarGrafo(List<Integer> vertices, List<Arista<Integer>> aristas) {
 		if (vertices == null || aristas == null) {
 			throw new IllegalArgumentException("Los datos del grafo no pueden ser null.");
@@ -78,11 +60,6 @@ public class Aplicacion {
 			observador.notificarNuevoGrafo();
 	}
 
-	private void notificarObservadoresSolucion() {
-		for (ObservadorConjuntoDominante observador : _observadores)
-			observador.notificarSolucion();
-	}
-
 	public List<Integer> obtenerVertices() {
 		return Collections.unmodifiableList(_grafo.obtenerVertices());
 
@@ -99,6 +76,11 @@ public class Aplicacion {
 		_solucion = solverGoloso.resolver();
 
 		notificarObservadoresSolucion();
+	}
+
+	private void notificarObservadoresSolucion() {
+		for (ObservadorConjuntoDominante observador : _observadores)
+			observador.notificarSolucion();
 	}
 
 	public void resolverBacktracking() {
@@ -145,12 +127,6 @@ public class Aplicacion {
 
 	public Set<Integer> obtenerSolucion() {
 		return Collections.unmodifiableSet(_solucion);
-	}
-
-	public void borrarGrafoActual() {
-		_grafo = new Grafo<Integer>();
-		_solucion = new HashSet<>();
-		notificarObservadoresNuevoGrafo();
 	}
 
 	public void ejecutarStress(EjecutorStressBacktracking.ObservadorProgreso observador) {
