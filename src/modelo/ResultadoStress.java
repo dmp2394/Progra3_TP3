@@ -5,35 +5,28 @@ public class ResultadoStress {
 	private final int _numeroInstancia;
 	private final int _cantidadVertices;
 	private final int _cantidadAristas;
-	private final long _tiempoGolosoNano;
-	private final long _tiempoBacktrackingNano;
-	private final int _tamanioGoloso;
-	private final int _tamanioBacktracking;
+	private final long _tiempoNano;
+	private final int _tamanioSolucion;
 
 	public ResultadoStress(int numeroInstancia, int cantidadVertices, int cantidadAristas,
-			long tiempoGolosoNano, long tiempoBacktrackingNano,
-			int tamanioGoloso, int tamanioBacktracking) {
+			long tiempoNano, int tamanioSolucion) {
 		_numeroInstancia = numeroInstancia;
 		_cantidadVertices = cantidadVertices;
 		_cantidadAristas = cantidadAristas;
-		_tiempoGolosoNano = tiempoGolosoNano;
-		_tiempoBacktrackingNano = tiempoBacktrackingNano;
-		_tamanioGoloso = tamanioGoloso;
-		_tamanioBacktracking = tamanioBacktracking;
+		_tiempoNano = tiempoNano;
+		_tamanioSolucion = tamanioSolucion;
 	}
 
 	public int obtenerNumeroInstancia() { return _numeroInstancia; }
 	public int obtenerCantidadVertices() { return _cantidadVertices; }
-	public long obtenerTiempoGolosoNano() { return _tiempoGolosoNano; }
-	public long obtenerTiempoBacktrackingNano() { return _tiempoBacktrackingNano; }
-	public int obtenerTamanioGoloso() { return _tamanioGoloso; }
-	public int obtenerTamanioBacktracking() { return _tamanioBacktracking; }
+	public int obtenerCantidadAristas() { return _cantidadAristas; }
+	public long obtenerTiempoNano() { return _tiempoNano; }
+	public int obtenerTamanioSolucion() { return _tamanioSolucion; }
 
 	public String obtenerResumen() {
 		return String.format(
-			"Instancia %d: |V|=%d, |E|=%d, goloso=%d (%.3f ms), backtracking=%d (%.3f ms)",
+			"Instancia %d: |V|=%d, |E|=%d, backtracking=%d (%.3f ms)",
 			_numeroInstancia, _cantidadVertices, _cantidadAristas,
-			_tamanioGoloso, _tiempoGolosoNano / 1_000_000.0,
-			_tamanioBacktracking, _tiempoBacktrackingNano / 1_000_000.0);
+			_tamanioSolucion, _tiempoNano / 1_000_000.0);
 	}
 }

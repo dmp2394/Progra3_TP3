@@ -35,14 +35,9 @@ public class EjecutorStressBacktracking {
 			int cantidadVertices = _tamanioInicial + instancia - 1;
 			Grafo<Integer> grafo = generarGrafo(cantidadVertices);
 
-			long inicioGoloso = System.nanoTime();
-			Set<Integer> solucionGolosa = new SolverGoloso(grafo).resolver();
-			long tiempoGoloso = System.nanoTime() - inicioGoloso;
-
-			long inicioBacktracking = System.nanoTime();
-			Set<Integer> solucionBacktracking =
-				new SolverBacktracking(grafo).resolver(cancelado);
-			long tiempoBacktracking = System.nanoTime() - inicioBacktracking;
+			long inicio = System.nanoTime();
+			Set<Integer> solucion = new SolverBacktracking(grafo).resolver(cancelado);
+			long tiempo = System.nanoTime() - inicio;
 
 			if (cancelado.get()) {
 				break;
@@ -50,8 +45,7 @@ public class EjecutorStressBacktracking {
 
 			ResultadoStress resultado = new ResultadoStress(
 				instancia, cantidadVertices, grafo.obtenerAristas().size(),
-				tiempoGoloso, tiempoBacktracking,
-				solucionGolosa.size(), solucionBacktracking.size());
+				tiempo, solucion.size());
 			resultados.add(resultado);
 			if (observador != null) {
 				observador.informar(resultado);

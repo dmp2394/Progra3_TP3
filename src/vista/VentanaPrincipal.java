@@ -137,7 +137,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 				_botonComparar.setEnabled(true);
 				_botonLimpiar.setEnabled(true);
 				_areaResultados.setText(
-						"Resultados\n\nElija un algoritmo, compare Goloso y Backtracking o ejecute un test de Stress.");
+						"Resultados\n\nElija un algoritmo, compare Goloso y Backtracking o ejecute un test de Stress del backtracking.");
 			} catch (IllegalArgumentException e) {
 				JOptionPane.showMessageDialog(_frame, "No se pudo cargar el grafo:\n" + e.getMessage(),
 						"Error al cargar el archivo", JOptionPane.ERROR_MESSAGE);
@@ -367,10 +367,9 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 	}
 
 	private String formatearResultadoStress(ResultadoStress resultado) {
-		return String.format("#%d: %d vértices\nGoloso: %d - %s\nBacktracking: %d - %s\n\n",
+		return String.format("#%d: %d vértices, %d aristas\nTiempo: %s\n\n",
 				resultado.obtenerNumeroInstancia(), resultado.obtenerCantidadVertices(),
-				resultado.obtenerTamanioGoloso(), formatearTiempo(resultado.obtenerTiempoGolosoNano()),
-				resultado.obtenerTamanioBacktracking(), formatearTiempo(resultado.obtenerTiempoBacktrackingNano()));
+				resultado.obtenerCantidadAristas(), formatearTiempo(resultado.obtenerTiempoNano()));
 	}
 
 	private JButton crearBotonDetener() {
@@ -422,7 +421,7 @@ public class VentanaPrincipal implements ObservadorConjuntoDominante {
 						Tema.esOscuro() ? new java.awt.Color(115, 125, 135) : new java.awt.Color(150, 160, 170)),
 				BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 		_areaResultados = new JTextArea(
-				"Resultados\n\nCargue un grafo en formato .json o haga un test de Stress entre algoritmo goloso y backtracking.");
+				"Resultados\n\nCargue un grafo en formato .json o ejecute un test de Stress del backtracking.");
 		scroll.setViewportView(_areaResultados);
 		_areaResultados.setEditable(false);
 		_areaResultados.setLineWrap(true);

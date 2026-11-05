@@ -35,11 +35,17 @@ public class EjecutorStressBacktrackingTest {
 	}
 
 	@Test
-	public void backtrackingNuncaEsPeorQueGoloso() {
+	public void informaDatosCoherentesDeCadaInstancia() {
 		List<ResultadoStress> resultados = ejecutarInstancias(4, 5);
 
 		for (ResultadoStress resultado : resultados) {
-			assertTrue(resultado.obtenerTamanioBacktracking() <= resultado.obtenerTamanioGoloso());
+			int vertices = resultado.obtenerCantidadVertices();
+			int maximoDeAristas = vertices * (vertices - 1) / 2;
+
+			assertTrue(resultado.obtenerCantidadAristas() <= maximoDeAristas);
+			assertTrue(resultado.obtenerTamanioSolucion() >= 1);
+			assertTrue(resultado.obtenerTamanioSolucion() <= vertices);
+			assertTrue(resultado.obtenerTiempoNano() >= 0);
 		}
 	}
 
