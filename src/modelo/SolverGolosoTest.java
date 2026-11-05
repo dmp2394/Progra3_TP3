@@ -2,8 +2,6 @@ package modelo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static modelo.Verificaciones.conjunto;
-import static modelo.Verificaciones.verificarDominacion;
 
 import java.util.Set;
 
@@ -18,7 +16,7 @@ public class SolverGolosoTest {
 		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
 		assertTrue(resultado.isEmpty());
-		verificarDominacion(grafo, resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -27,8 +25,8 @@ public class SolverGolosoTest {
 
 		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
-		assertEquals(conjunto(1), resultado);
-		verificarDominacion(grafo, resultado);
+		assertEquals(Verificaciones.conjunto(1), resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -37,8 +35,8 @@ public class SolverGolosoTest {
 
 		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
-		assertEquals(conjunto(1, 2, 3), resultado);
-		verificarDominacion(grafo, resultado);
+		assertEquals(Verificaciones.conjunto(1, 2, 3), resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -47,8 +45,8 @@ public class SolverGolosoTest {
 
 		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
-		assertEquals(conjunto(1), resultado);
-		verificarDominacion(grafo, resultado);
+		assertEquals(Verificaciones.conjunto(1), resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -57,8 +55,8 @@ public class SolverGolosoTest {
 
 		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
-		assertEquals(conjunto(1, 2, 6), resultado);
-		verificarDominacion(grafo, resultado);
+		assertEquals(Verificaciones.conjunto(1, 2, 6), resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -68,7 +66,7 @@ public class SolverGolosoTest {
 		Set<Integer> resultado = new SolverGoloso(grafo).resolver();
 
 		assertEquals(3, resultado.size());
-		verificarDominacion(grafo, resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class SolverGolosoTest {
 
 		SolverGoloso solver = new SolverGoloso(grafo);
 
-		assertEquals(1, solver.calcularAporte(1, conjunto(1, 2)));
+		assertEquals(1, solver.calcularAporte(1, Verificaciones.conjunto(1, 2)));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

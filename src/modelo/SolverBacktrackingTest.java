@@ -2,8 +2,6 @@ package modelo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static modelo.Verificaciones.conjunto;
-import static modelo.Verificaciones.verificarDominacion;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,7 +17,7 @@ public class SolverBacktrackingTest {
 		Set<Integer> resultado = resolver(grafo);
 
 		assertTrue(resultado.isEmpty());
-		verificarDominacion(grafo, resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -28,8 +26,8 @@ public class SolverBacktrackingTest {
 
 		Set<Integer> resultado = resolver(grafo);
 
-		assertEquals(conjunto(1), resultado);
-		verificarDominacion(grafo, resultado);
+		assertEquals(Verificaciones.conjunto(1), resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -38,8 +36,8 @@ public class SolverBacktrackingTest {
 
 		Set<Integer> resultado = resolver(grafo);
 
-		assertEquals(conjunto(1, 2, 3), resultado);
-		verificarDominacion(grafo, resultado);
+		assertEquals(Verificaciones.conjunto(1, 2, 3), resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -48,8 +46,8 @@ public class SolverBacktrackingTest {
 
 		Set<Integer> resultado = resolver(grafo);
 
-		assertEquals(conjunto(1), resultado);
-		verificarDominacion(grafo, resultado);
+		assertEquals(Verificaciones.conjunto(1), resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -59,7 +57,7 @@ public class SolverBacktrackingTest {
 		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(2, resultado.size());
-		verificarDominacion(grafo, resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -69,7 +67,7 @@ public class SolverBacktrackingTest {
 		Set<Integer> resultado = resolver(grafo);
 
 		assertEquals(3, resultado.size());
-		verificarDominacion(grafo, resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test
@@ -80,7 +78,7 @@ public class SolverBacktrackingTest {
 
 		assertEquals(3, resultado.size());
 		assertTrue(resultado.contains(5));
-		verificarDominacion(grafo, resultado);
+		Verificaciones.verificarDominacion(grafo, resultado);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

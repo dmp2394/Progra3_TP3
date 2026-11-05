@@ -2,8 +2,6 @@ package modelo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static modelo.Verificaciones.conjunto;
-import static modelo.Verificaciones.verificarDominacion;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -37,9 +35,9 @@ public class ComparacionAlgoritmosTest {
 		Set<Integer> solucionGolosa = new SolverGoloso(grafo).resolver();
 		Set<Integer> solucionBacktracking = new SolverBacktracking(grafo).resolver(new AtomicBoolean(false));
 
-		assertEquals(conjunto(1, 2, 3), solucionGolosa);
+		assertEquals(Verificaciones.conjunto(1, 2, 3), solucionGolosa);
 		assertEquals(2, solucionBacktracking.size());
-		verificarDominacion(grafo, solucionGolosa);
-		verificarDominacion(grafo, solucionBacktracking);
+		Verificaciones.verificarDominacion(grafo, solucionGolosa);
+		Verificaciones.verificarDominacion(grafo, solucionBacktracking);
 	}
 }
