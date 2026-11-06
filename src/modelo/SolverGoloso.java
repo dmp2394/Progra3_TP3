@@ -22,7 +22,7 @@ public class SolverGoloso {
 		int cantidadVertices = _instancia.obtenerVertices().size();
 
 		while (dominados.size() < cantidadVertices) {
-			Integer mejorVertice = elegirVerticeConMayorAporte(dominados, solucion); // n. O(n+m)
+			Integer mejorVertice = elegirVerticeConMayorAporte(dominados, solucion); 
 
 			solucion.add(mejorVertice);
 
@@ -37,12 +37,12 @@ public class SolverGoloso {
 		Integer mejor = null;
 		int mayorAporte = -1;
 
-		for (Integer candidato : _instancia.obtenerVertices()) { //
+		for (Integer candidato : _instancia.obtenerVertices()) { 
 			if (solucion.contains(candidato)) {
 				continue;
 			}
 
-			int aporteActual = calcularAporte(candidato, dominados); // n*O(2m)
+			int aporteActual = calcularAporte(candidato, dominados); 
 
 			if (aporteActual > mayorAporte || (aporteActual == mayorAporte && candidato < mejor)) {
 				mejor = candidato;
@@ -60,7 +60,7 @@ public class SolverGoloso {
 			noDominados++;
 		}
 
-		for (Integer vecino : _instancia.obtenerVecinos(vertice)) { // O(d(v))
+		for (Integer vecino : _instancia.obtenerVecinos(vertice)) { 
 			if (!dominados.contains(vecino)) {
 				noDominados++;
 			}

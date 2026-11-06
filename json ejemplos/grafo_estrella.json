@@ -1,0 +1,14 @@
+{
+  "vertices": [1,2,3,4,5,6,7,8,9,10],
+  "aristas": [
+    { "extremo1": 1, "extremo2": 2 },
+    { "extremo1": 1, "extremo2": 3 },
+    { "extremo1": 1, "extremo2": 4 },
+    { "extremo1": 1, "extremo2": 5 },
+    { "extremo1": 1, "extremo2": 6 },
+    { "extremo1": 1, "extremo2": 7 },
+    { "extremo1": 1, "extremo2": 8 },
+    { "extremo1": 1, "extremo2": 9 },
+    { "extremo1": 1, "extremo2": 10 }
+  ]
+}
